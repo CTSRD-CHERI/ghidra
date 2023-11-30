@@ -91,3 +91,8 @@ gradlew.*
 *.log
 core.*
 !core.png
+
+# Dev scripts
+buildDevGhidra.sh
+runDevGhidra.sh
+updateAArch64Processor.sh
