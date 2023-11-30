@@ -20,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import ghidra.app.util.bin.format.elf.*;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.lang.Language;
+import ghidra.program.model.listing.Program;
 
 public class AARCH64_ElfExtension extends ElfExtension {
 
@@ -53,6 +54,16 @@ public class AARCH64_ElfExtension extends ElfExtension {
 	}
 
 	@Override
+	public Address creatingFunction(ElfLoadHelper elfLoadHelper, Address functionAddress) {
+		Program program = elfLoadHelper.getProgram();
+		if ((functionAddress.getOffset() & 1) != 0) {
+			// TODO: check if it is C64 code
+			functionAddress = functionAddress.previous(); // align address
+		}
+		return functionAddress;
+	}
+
+	@Override
 	public Address evaluateElfSymbol(ElfLoadHelper elfLoadHelper, ElfSymbol elfSymbol,
 			Address address, boolean isExternal) {
 
@@ -66,9 +77,18 @@ public class AARCH64_ElfExtension extends ElfExtension {
 		}
 
 		if ("$x".equals(symName) || symName.startsWith("$x.")) {
+			// is A64 code
 			elfLoadHelper.markAsCode(address);
 
 			// do not retain $x symbols in program due to potential function/thunk naming interference
+			elfLoadHelper.setElfSymbolAddress(elfSymbol, address);
+			return null;
+		}
+		else if ("$c".equals(symName) || symName.startsWith("$c.")) {
+			// is C64 code
+			elfLoadHelper.markAsCode(address);
+
+			// do not retain $c symbols in program due to potential function/thunk naming interference
 			elfLoadHelper.setElfSymbolAddress(elfSymbol, address);
 			return null;
 		}
@@ -76,7 +96,7 @@ public class AARCH64_ElfExtension extends ElfExtension {
 			// is data, need to protect as data
 			elfLoadHelper.createUndefinedData(address, (int) elfSymbol.getSize());
 
-			// do not retain $x symbols in program due to excessive duplicate symbols
+			// do not retain $d symbols in program due to excessive duplicate symbols
 			elfLoadHelper.setElfSymbolAddress(elfSymbol, address);
 			return null;
 		}

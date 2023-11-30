@@ -1,0 +1,849 @@
+# New instructions in Morello
+
+# Morello add/subtract capability
+:add Rd_GPR129csp, Rn_GPR129csp, morello_imm12_addsubimm_operand_i64_posimm_lsl0
+is toplevel.op0=0 & toplevel=0x2 & b_23=0 & b_22=0 & morello_imm12_addsubimm_operand_i64_posimm_lsl0 & Rn_GPR129csp & Rd_GPR129csp
+{
+}
+
+:add Rd_GPR129csp, Rn_GPR129csp, morello_imm12_addsubimm_operand_i64_posimm_lsl12
+is toplevel.op0=0 & toplevel=0x2 & b_23=0 & b_22=1 & morello_imm12_addsubimm_operand_i64_posimm_lsl12 & Rn_GPR129csp & Rd_GPR129csp
+{
+}
+
+:sub Rd_GPR129csp, Rn_GPR129csp, morello_imm12_addsubimm_operand_i64_negimm_lsl0
+is toplevel.op0=0 & toplevel=0x2 & b_23=1 & b_22=0 & morello_imm12_addsubimm_operand_i64_negimm_lsl0 & Rn_GPR129csp & Rd_GPR129csp
+{
+}
+
+:sub Rd_GPR129csp, Rn_GPR129csp, morello_imm12_addsubimm_operand_i64_negimm_lsl12
+is toplevel.op0=0 & toplevel=0x2 & b_23=1 & b_22=1 & morello_imm12_addsubimm_operand_i64_negimm_lsl12 & Rn_GPR129csp & Rd_GPR129csp
+{
+}
+
+# Morello load/exclusive (toplevel.op0=0x1 & toplevel=0x2 & b_23=0)
+:stxr Rs_GPR32, Rt_GPR129, CAddrReg
+is toplevel.op0=0x1 & toplevel=0x2 & b_23=0 & b_22=0 & b_21=0 & b_15=0 & b_1014=0b11111 & Rs_GPR32 & Rt_GPR129 & CAddrReg
+{
+}
+
+:stlxr Rs_GPR32, Rt_GPR129, CAddrReg
+is toplevel.op0=0x1 & toplevel=0x2 & b_23=0 & b_22=0 & b_21=0 & b_15=1 & b_1014=0b11111 & Rs_GPR32 & Rt_GPR129 & CAddrReg
+{
+}
+
+:stxp Rs_GPR32, Rt_GPR129, Rt2_GPR129, CAddrReg
+is toplevel.op0=0x1 & toplevel=0x2 & b_23=0 & b_22=0 & b_21=1 & b_15=0 & Rs_GPR32 & Rt_GPR129 & CAddrReg & Rt2_GPR129
+{
+}
+
+:stlxp Rs_GPR32, Rt_GPR129, Rt2_GPR129, CAddrReg
+is toplevel.op0=0x1 & toplevel=0x2 & b_23=0 & b_22=0 & b_21=1 & b_15=1 & Rs_GPR32 & Rt_GPR129 & CAddrReg & Rt2_GPR129
+{
+}
+
+:ltxr Rt_GPR129, CAddrReg
+is toplevel.op0=0x1 & toplevel=0x2 & b_23=0 & b_22=1 & b_21=0 & b_15=0 & b_1014=0b11111 & b_1620=0b11111 & Rt_GPR129 & CAddrReg
+{
+}
+
+:ltaxr Rt_GPR129, CAddrReg
+is toplevel.op0=0x1 & toplevel=0x2 & b_23=0 & b_22=1 & b_21=0 & b_15=1 & b_1014=0b11111 & b_1620=0b11111 & Rt_GPR129 & CAddrReg
+{
+}
+
+:ltxp Rt_GPR129, Rt2_GPR129, CAddrReg
+is toplevel.op0=0x1 & toplevel=0x2 & b_23=0 & b_22=1 & b_21=1 & b_15=0 & b_1620=0b11111 & Rt_GPR129 & Rt2_GPR129 & CAddrReg
+{
+}
+
+:ltaxp Rt_GPR129, Rt2_GPR129, CAddrReg
+is toplevel.op0=0x1 & toplevel=0x2 & b_23=0 & b_22=1 & b_21=1 & b_15=1 & b_1620=0b11111 & Rt_GPR129 & Rt2_GPR129 & CAddrReg
+{
+}
+
+# Morello load/store pair postindex (toplevel.op0=0x1 & toplevel=0x2 & b_23=1)
+:stp Rt_GPR129, Rt2_GPR129, CAddrPairIndexed
+is toplevel.op0=0x1 & toplevel=0x2 & b_23=1 & b_22=0 & Rt_GPR129 & Rt2_GPR129 & CAddrPairIndexed
+{
+}
+
+:ldp Rt_GPR129, Rt2_GPR129, CAddrPairIndexed
+is toplevel.op0=0x1 & toplevel=0x2 & b_23=1 & b_22=1 & Rt_GPR129 & Rt2_GPR129 & CAddrPairIndexed
+{
+}
+
+# Morello load/store acquire/release capability via alternate base (toplevel.op0=0b10 & toplevel=0x2 & b_23=0 & b_21=0 & b_15=0)
+:stlr Rt_GPR129, CAddrReg
+is toplevel.op0=0b10 & toplevel=0x2 & b_23=0 & b_21=0 & b_15=0 & b_22=0 & b_1620=0b11111 & b_1014=0b11111 & Rt_GPR129 & CAddrReg
+{}
+
+:ldar Rt_GPR129, CAddrReg
+is toplevel.op0=0b10 & toplevel=0x2 & b_23=0 & b_21=0 & b_15=0 & b_22=1 & b_1620=0b11111 & b_1014=0b11111 & Rt_GPR129 & CAddrReg
+{}
+
+# Morello load/store acquire/release (toplevel.op0=0b10 & toplevel=0x2 & b_23=0 & b_21=0 & b_15=1)
+:stlr Rt_GPR129, CAddrReg
+is toplevel.op0=0b10 & toplevel=0x2 & b_23=0 & b_21=0 & b_15=1 & b_1620=0b11111 & b_1014=0b11111 & b_22=0 & Rt_GPR129 & CAddrReg
+{}
+
+:ldar Rt_GPR129, CAddrReg
+is toplevel.op0=0b10 & toplevel=0x2 & b_23=0 & b_21=0 & b_15=1 & b_1620=0b11111 & b_1014=0b11111 & b_22=1 & Rt_GPR129 & CAddrReg
+{}
+
+# Morello load/store acquire/release via alternate base (toplevel.op0=0b10 & toplevel=0x2 & b_23=0 & b_21=1)
+:stlrb Rt_GPR32, CAddrReg
+is toplevel.op0=0b10 & toplevel=0x2 & b_23=0 & b_21=1 & b_22=0 & b_1620=0b11111 & b_15=0 & b_1014=0b11111 & Rt_GPR32 & CAddrReg
+{}
+
+:stlr Rt_GPR32, CAddrReg
+is toplevel.op0=0b10 & toplevel=0x2 & b_23=0 & b_21=1 & b_22=0 & b_1620=0b11111 & b_15=1 & b_1014=0b11111 & Rt_GPR32 & CAddrReg
+{}
+
+:ldarb Rt_GPR32, CAddrReg
+is toplevel.op0=0b10 & toplevel=0x2 & b_23=0 & b_21=1 & b_22=1 & b_1620=0b11111 & b_15=0 & b_1014=0b11111 & Rt_GPR32 & CAddrReg
+{}
+
+:ldar Rt_GPR32, CAddrReg
+is toplevel.op0=0b10 & toplevel=0x2 & b_23=0 & b_21=1 & b_22=1 & b_1620=0b11111 & b_15=1 & b_1014=0b11111 & Rt_GPR32 & CAddrReg
+{}
+
+# Morello load/store pair (toplevel.op0=0b10 & toplevel=0x2 & b_23=1)
+:stp Rt_GPR129, Rt2_GPR129, CAddrPairIndexed
+is toplevel.op0=0b10 & toplevel=0x2 & b_23=1 & b_22=0 & Rt_GPR129 & Rt2_GPR129 & CAddrPairIndexed
+{}
+
+:ldp Rt_GPR129, Rt2_GPR129, CAddrPairIndexed
+is toplevel.op0=0b10 & toplevel=0x2 & b_23=1 & b_22=1 & Rt_GPR129 & Rt2_GPR129 & CAddrPairIndexed
+{}
+
+# Morello load/store pair non-temporal (toplevel.op0=0b11 & toplevel=0x2 & b_23=0)
+:stnp Rt_GPR129, Rt2_GPR129, CAddrPairIndexed
+is toplevel.op0=0b11 & toplevel=0x2 & b_23=0 & b_22=0 & Rt_GPR129 & Rt2_GPR129 & CAddrPairIndexed
+{}
+
+:ldnp Rt_GPR129, Rt2_GPR129, CAddrPairIndexed
+is toplevel.op0=0b11 & toplevel=0x2 & b_23=0 & b_22=1 & Rt_GPR129 & Rt2_GPR129 & CAddrPairIndexed
+{}
+
+# Morello load/store pair preindex (toplevel.op0=0b11 & toplevel=0x2 & b_23=1)
+:stp Rt_GPR129, Rt2_GPR129, CAddrPairIndexed
+is toplevel.op0=0b11 & toplevel=0x2 & b_23=1 & b_22=0 & Rt_GPR129 & Rt2_GPR129 & CAddrPairIndexed
+{}
+
+:ldp Rt_GPR129, Rt2_GPR129, CAddrPairIndexed
+is toplevel.op0=0b11 & toplevel=0x2 & b_23=1 & b_22=1 & Rt_GPR129 & Rt2_GPR129 & CAddrPairIndexed
+{}
+
+# LDR (literal) (toplevel.op0=0b100 & toplevel=0x2 & b_23=0 & b_22=0)
+:ldr Rt_GPR129, Addr17
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=0 & b_22=0 & Rt_GPR129 & Addr17
+{}
+
+# Morello load/store unsigned offset via alternate base (toplevel.op0=0b100 & toplevel=0x2 & b_23=0 & b_22=1)
+:str Rt_GPR129, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=0 & b_22=1 & b_21=0 & b_1011=0 & CAddrIndexed & Rt_GPR129
+{}
+
+:strb Rt_GPR32, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=0 & b_22=1 & b_21=0 & b_1011=1 & Rt_GPR32 & CAddrIndexed
+{}
+
+:str Rt_GPR32, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=0 & b_22=1 & b_21=0 & b_1011=2 & CAddrIndexed & Rt_GPR32
+{}
+
+:str Rt_GPR64, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=0 & b_22=1 & b_21=0 & b_1011=3 & CAddrIndexed & Rt_GPR64
+{}
+
+:ldr Rt_GPR129, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=0 & b_22=1 & b_21=1 & b_1011=0 & CAddrIndexed & Rt_GPR129
+{}
+
+:ldrb Rt_GPR32, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=0 & b_22=1 & b_21=1 & b_1011=1 & Rt_GPR32 & CAddrIndexed
+{}
+
+:ldr Rt_GPR32, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=0 & b_22=1 & b_21=1 & b_1011=2 & CAddrIndexed & Rt_GPR32
+{}
+
+:ldr Rt_GPR64, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=0 & b_22=1 & b_21=1 & b_1011=3 & CAddrIndexed & Rt_GPR64
+{}
+
+# Morello load/store register via alternate base (toplevel.op0=0b100 & toplevel=0x2 & b_23=1)
+# scale = 0
+:strb Rt_GPR32, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=1 & b_22=0 & b_21=0 & b_1011=0 & Rt_GPR32 & CAddrIndexed
+{}
+
+# 0
+:ldrsb Rt_GPR64, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=1 & b_22=0 & b_21=0 & b_1011=1 & Rt_GPR64 & CAddrIndexed
+{}
+
+# 1
+:ldrsh Rt_GPR64, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=1 & b_22=0 & b_21=0 & b_1011=2 & Rt_GPR64 & CAddrIndexed
+{}
+
+# 1
+:strh Rt_GPR32, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=1 & b_22=0 & b_21=0 & b_1011=3 & Rt_GPR32 & CAddrIndexed
+{}
+
+# 2
+:str Rt_GPR32, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=1 & b_22=0 & b_21=1 & b_1011=0 & Rt_GPR32 & CAddrIndexed
+{}
+
+# 3
+:str Rt_GPR64, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=1 & b_22=0 & b_21=1 & b_1011=1 & Rt_GPR64 & CAddrIndexed
+{}
+
+# 3
+:str Rt_FPR64, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=1 & b_22=0 & b_21=1 & b_1011=2 & Rt_FPR64 & CAddrIndexed
+{}
+
+# 2
+:str Rt_FPR32, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=1 & b_22=0 & b_21=1 & b_1011=3 & Rt_FPR32 & CAddrIndexed
+{}
+
+# 0
+:ldrb Rt_GPR32, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=1 & b_22=1 & b_21=0 & b_1011=0 & Rt_GPR32 & CAddrIndexed
+{}
+
+# 0
+:ldrsb Rt_GPR32, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=1 & b_22=1 & b_21=0 & b_1011=1 & Rt_GPR32 & CAddrIndexed
+{}
+
+# 1
+:ldrsh Rt_GPR32, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=1 & b_22=1 & b_21=0 & b_1011=2 & Rt_GPR32 & CAddrIndexed
+{}
+
+# 1
+:ldrh Rt_GPR32, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=1 & b_22=1 & b_21=0 & b_1011=3 & Rt_GPR32 & CAddrIndexed
+{}
+
+# 2
+:ldr Rt_GPR32, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=1 & b_22=1 & b_21=1 & b_1011=0 & Rt_GPR32 & CAddrIndexed
+{}
+
+# 3
+:ldr Rt_GPR64, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=1 & b_22=1 & b_21=1 & b_1011=1 & Rt_GPR64 & CAddrIndexed
+{}
+
+# 3
+:ldr Rt_FPR64, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=1 & b_22=1 & b_21=1 & b_1011=2 & Rt_FPR64 & CAddrIndexed
+{}
+
+# 2
+:ldr Rt_FPR32, CAddrIndexed
+is toplevel.op0=0b100 & toplevel=0x2 & b_23=1 & b_22=1 & b_21=1 & b_1011=3 & Rt_FPR32 & CAddrIndexed
+{}
+
+# Morello load/store unscaled immediate (toplevel.op0=0b101 & toplevel=0x2 & b_21=0 & b_1011=0)
+:stur Rt_GPR129, CAddrIndexed
+is toplevel.op0=0b101 & toplevel=0x2 & b_21=0 & b_1011=0 & b_2223=0 & Rt_GPR129 & CAddrIndexed
+{}
+
+:ldur Rt_GPR129, CAddrIndexed
+is toplevel.op0=0b101 & toplevel=0x2 & b_21=0 & b_1011=0 & b_2223=1 & Rt_GPR129 & CAddrIndexed
+{}
+
+# Morello load/store immediate postindex (toplevel.op0=0b101 & toplevel=0x2 & b_21=0 & b_1011=1)
+:str Rt_GPR129, CAddrIndexed
+is toplevel.op0=0b101 & toplevel=0x2 & b_21=0 & b_1011=1 & b_2223=0 & Rt_GPR129 & CAddrIndexed
+{}
+
+:ldr Rt_GPR129, CAddrIndexed
+is toplevel.op0=0b101 & toplevel=0x2 & b_21=0 & b_1011=1 & b_2223=1 & Rt_GPR129 & CAddrIndexed
+{}
+
+# Morello load/store immediate translated (toplevel.op0=0b101 & toplevel=0x2 & b_21=0 & b_1011=2)
+:sttr Rt_GPR129, CAddrIndexed
+is toplevel.op0=0b101 & toplevel=0x2 & b_21=0 & b_1011=2 & b_2223=0 & Rt_GPR129 & CAddrIndexed
+{}
+
+:ldtr Rt_GPR129, CAddrIndexed
+is toplevel.op0=0b101 & toplevel=0x2 & b_21=0 & b_1011=2 & b_2223=1 & Rt_GPR129 & CAddrIndexed
+{}
+
+# Morello load/store immediate preindex (toplevel.op0=0b101 & toplevel=0x2 & b_21=0 & b_1011=3)
+:str Rt_GPR129, CAddrIndexed
+is toplevel.op0=0b101 & toplevel=0x2 & b_21=0 & b_1011=3 & b_2223=0 & Rt_GPR129 & CAddrIndexed
+{}
+
+:ldr Rt_GPR129, CAddrIndexed
+is toplevel.op0=0b101 & toplevel=0x2 & b_21=0 & b_1011=3 & b_2223=1 & Rt_GPR129 & CAddrIndexed
+{}
+
+# Morello swap (toplevel.op0=0b101 & toplevel=0x2 & b_21=1 & b_1015=0b100000)
+:swp Rs_GPR129, Rt_GPR129, CAddrReg
+is toplevel.op0=0b101 & toplevel=0x2 & b_21=1 & b_1015=0b100000 & b_2223=0 & Rs_GPR129 & Rt_GPR129 & CAddrReg
+{}
+
+:swpl Rs_GPR129, Rt_GPR129, CAddrReg
+is toplevel.op0=0b101 & toplevel=0x2 & b_21=1 & b_1015=0b100000 & b_2223=1 & Rs_GPR129 & Rt_GPR129 & CAddrReg
+{}
+
+:swpa Rs_GPR129, Rt_GPR129, CAddrReg
+is toplevel.op0=0b101 & toplevel=0x2 & b_21=1 & b_1015=0b100000 & b_2223=2 & Rs_GPR129 & Rt_GPR129 & CAddrReg
+{}
+
+:swpal Rs_GPR129, Rt_GPR129, CAddrReg
+is toplevel.op0=0b101 & toplevel=0x2 & b_21=1 & b_1015=0b100000 & b_2223=3 & Rs_GPR129 & Rt_GPR129 & CAddrReg
+{}
+
+# LDAPR (toplevel.op0=0b101 & toplevel=0x2 & b_21=1 & b_1015=0b110000)
+:ldapr Rt_GPR129, CAddrReg
+is toplevel.op0=0b101 & toplevel=0x2 & b_21=1 & b_1015=0b110000 & Rt_GPR129 & CAddrReg
+{}
+
+# Morello compare and swap (toplevel.op0=0b101 & toplevel=0x2 & b_21=1 & b_1014=0b11111)
+:cas Rs_GPR129, Rt_GPR129, CAddrReg
+is toplevel.op0=0b101 & toplevel=0x2 & b_21=1 & b_1014=0b11111 & b_2223=2 & b_15=0 & Rs_GPR129 & Rt_GPR129 & CAddrReg
+{}
+
+:casl Rs_GPR129, Rt_GPR129, CAddrReg
+is toplevel.op0=0b101 & toplevel=0x2 & b_21=1 & b_1014=0b11111 & b_2223=2 & b_15=1 & Rs_GPR129 & Rt_GPR129 & CAddrReg
+{}
+
+:casa Rs_GPR129, Rt_GPR129, CAddrReg
+is toplevel.op0=0b101 & toplevel=0x2 & b_21=1 & b_1014=0b11111 & b_2223=3 & b_15=0 & Rs_GPR129 & Rt_GPR129 & CAddrReg
+{}
+
+:casal Rs_GPR129, Rt_GPR129, CAddrReg
+is toplevel.op0=0b101 & toplevel=0x2 & b_21=1 & b_1014=0b11111 & b_2223=3 & b_15=1 & Rs_GPR129 & Rt_GPR129 & CAddrReg
+{}
+
+# Morello load/store register (toplevel.op0=0b101 & toplevel=0x2 & b_21=1 & b_14=1 & b_1011=2)
+# scale=4
+:str Rt_GPR129, CAddrIndexed
+is toplevel.op0=0b101 & toplevel=0x2 & b_21=1 & b_14=1 & b_1011=2 & b_2223=0 & Rt_GPR129 & CAddrIndexed
+{}
+
+# scale=4
+:ldr Rt_GPR129, CAddrIndexed
+is toplevel.op0=0b101 & toplevel=0x2 & b_21=1 & b_14=1 & b_1011=2 & b_2223=1 & Rt_GPR129 & CAddrIndexed
+{}
+
+# Morello load/store unsigned offset (toplevel.op0=0b110 & toplevel=0x2 & b_23=0)
+:str Rt_GPR129, CAddrIndexed
+is toplevel.op0=0b110 & toplevel=0x2 & b_23=0 & b_22=0 & Rt_GPR129 & CAddrIndexed
+{}
+
+:ldr Rt_GPR129, CAddrIndexed
+is toplevel.op0=0b110 & toplevel=0x2 & b_23=0 & b_22=1 &  Rt_GPR129 & CAddrIndexed
+{}
+
+# Morello get/set system register (toplevel.op0=0b110 & toplevel=0x2 & b_2123=0b100)
+CopReg: "sreg("^Op0^", "^Op1_uimm3^", c"^CRn^", c"^CRm^", "^Op2_uimm3^")" is l=0 & Op0 & Op1_uimm3 & CRn & CRm & Op2_uimm3 & Rt_GPR64 { tmp:8 = UnkSytemRegWrite(Op0:1, Op1_uimm3:1, CRn:1, CRm:1, Op2_uimm3:1, Rt_GPR64); export tmp; }
+
+:msr CopReg, Rt_GPR64
+is toplevel.op0=0b110 & toplevel=0x2 & b_2123=0b100 & b_20=0 & CopReg & Rt_GPR64
+{}
+
+:mrs Rt_GPR64, CopReg
+is toplevel.op0=0b110 & toplevel=0x2 & b_2123=0b100 & b_20=1 & CopReg & Rt_GPR64
+{}
+
+# ADD (extended register) (toplevel.op0=0b110 & toplevel=0x2 & b_2123=0b101)
+:add Rd_GPR129csp, Rn_GPR129csp, ExtendRegShift64
+is toplevel.op0=0b110 & toplevel=0x2 & b_2123=0b101 & Rd_GPR129csp & Rn_GPR129csp & ExtendRegShift64
+{}
+
+# Morello load/store unscaled immediate via alternate base (toplevel.op0=0b111 & toplevel=0x2)
+:sturb Rt_GPR32, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_2223=0 & b_21=0 & b_1011=0 & Rt_GPR32 & CAddrIndexed
+{}
+
+:ldurb Rt_GPR32, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_2223=0 & b_21=0 & b_1011=1 & Rt_GPR32 & CAddrIndexed
+{}
+
+:ldursb Rt_GPR64, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_2223=0 & b_21=0 & b_1011=2 & Rt_GPR64 & CAddrIndexed
+{}
+
+:ldursb Rt_GPR32, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_2223=0 & b_21=0 & b_1011=3 & Rt_GPR32 & CAddrIndexed
+{}
+
+:sturh Rt_GPR32, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_2223=1 & b_21=0 & b_1011=0 & Rt_GPR32 & CAddrIndexed
+{}
+
+:ldurh Rt_GPR32, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_2223=1 & b_21=0 & b_1011=1 & Rt_GPR32 & CAddrIndexed
+{}
+
+:ldursh Rt_GPR64, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_2223=1 & b_21=0 & b_1011=2 & Rt_GPR64 & CAddrIndexed
+{}
+
+:ldursh Rt_GPR32, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_2223=1 & b_21=0 & b_1011=3 & Rt_GPR32 & CAddrIndexed
+{}
+
+### FP&SIMD
+#### 8-bit
+:stur Rt_FPR8, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_21=1 & b_2223=0 & b_1011=0 & Rt_FPR8 & CAddrIndexed
+{}
+
+:ldur Rt_FPR8, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_21=1 & b_2223=0 & b_1011=1 & Rt_FPR8 & CAddrIndexed
+{}
+
+#### 16-bit
+:stur Rt_FPR16, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_21=1 & b_2223=1 & b_1011=0 & Rt_FPR16 & CAddrIndexed
+{}
+
+:ldur Rt_FPR16, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_21=1 & b_2223=1 & b_1011=1 & Rt_FPR16 & CAddrIndexed
+{}
+
+#### 32-bit
+:stur Rt_FPR32, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_21=1 & b_2223=2 & b_1011=0 & Rt_FPR32 & CAddrIndexed
+{}
+
+:ldur Rt_FPR32, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_21=1 & b_2223=2 & b_1011=1 & Rt_FPR32 & CAddrIndexed
+{}
+
+#### 64-bit
+:stur Rt_FPR64, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_21=1 & b_2223=3 & b_1011=0 & Rt_FPR64 & CAddrIndexed
+{}
+
+:ldur Rt_FPR64, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_21=1 & b_2223=3 & b_1011=1 & Rt_FPR64 & CAddrIndexed
+{}
+
+#### 128-bit
+:stur Rt_FPR128, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_21=1 & b_2223=0 & b_1011=2 & Rt_FPR128 & CAddrIndexed
+{}
+
+:ldur Rt_FPR128, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_21=1 & b_2223=0 & b_1011=3 & Rt_FPR128 & CAddrIndexed
+{}
+
+### Integer
+:stur Rt_GPR32, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_2223=2 & b_21=0 & b_1011=0 & Rt_GPR32 & CAddrIndexed
+{}
+
+:stur Rt_GPR64, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_2223=3 & b_21=0 & b_1011=0 & Rt_GPR64 & CAddrIndexed
+{}
+
+:ldur Rt_GPR32, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_2223=2 & b_21=0 & b_1011=1 & Rt_GPR32 & CAddrIndexed
+{}
+
+:ldur Rt_GPR64, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_2223=3 & b_21=0 & b_1011=1 & Rt_GPR64 & CAddrIndexed
+{}
+
+### Capability, alternate base
+:stur Rt_GPR129, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_2223=2 & b_21=0 & b_1011=3 & Rt_GPR129 & CAddrIndexed
+{}
+
+:ldur Rt_GPR129, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_2223=3 & b_21=0 & b_1011=3 & Rt_GPR129 & CAddrIndexed
+{}
+
+:ldursw Rt_GPR64, CAddrIndexed
+is toplevel.op0=0b111 & toplevel=0x2 & b_2223=2 & b_21=0 & b_1011=2 & Rt_GPR64 & CAddrIndexed
+{}
+
+# Morello misc (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11)
+
+## Morello get field 1 (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1621=0 & b_1112=2 & b_10=0)
+:gcbase Rd_GPR64, Rn_GPR129csp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1621=0 & b_1112=2 & b_10=0 & b_1315=0 & Rd_GPR64 & Rn_GPR129csp
+{}
+
+:gclen Rd_GPR64, Rn_GPR129csp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1621=0 & b_1112=2 & b_10=0 & b_1315=1 & Rd_GPR64 & Rn_GPR129csp
+{}
+
+:gcvalue Rd_GPR64, Rn_GPR129csp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1621=0 & b_1112=2 & b_10=0 & b_1315=2 & Rd_GPR64 & Rn_GPR129csp
+{}
+
+:gcoff Rd_GPR64, Rn_GPR129csp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1621=0 & b_1112=2 & b_10=0 & b_1315=3 & Rd_GPR64 & Rn_GPR129csp
+{}
+
+:gctag Rd_GPR64, Rn_GPR129csp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1621=0 & b_1112=2 & b_10=0 & b_1315=4 & Rd_GPR64 & Rn_GPR129csp
+{}
+
+:gcseal Rd_GPR64, Rn_GPR129csp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1621=0 & b_1112=2 & b_10=0 & b_1315=5 & Rd_GPR64 & Rn_GPR129csp
+{}
+
+:gcperm Rd_GPR64, Rn_GPR129csp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1621=0 & b_1112=2 & b_10=0 & b_1315=6 & Rd_GPR64 & Rn_GPR129csp
+{}
+
+:gctype Rd_GPR64, Rn_GPR129csp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1621=0 & b_1112=2 & b_10=0 & b_1315=7 & Rd_GPR64 & Rn_GPR129csp
+{}
+
+## Morello get field 2 (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=2 & b_1112=2 & b_10=0)
+:gclim Rd_GPR64, Rn_GPR129csp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=2 & b_1112=2 & b_10=0 & b_1314=0 & Rd_GPR64 & Rn_GPR129csp
+{}
+
+:gcflgs Rd_GPR64, Rn_GPR129csp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=2 & b_1112=2 & b_10=0 & b_1314=1 & Rd_GPR64 & Rn_GPR129csp
+{}
+
+:cfhi Rd_GPR64, Rn_GPR129csp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=2 & b_1112=2 & b_10=0 & b_1314=2 & Rd_GPR64 & Rn_GPR129csp
+{}
+
+## Morello miscellaneous capability 0 (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=2 & b_10=0 & b_1521=0b11)
+:clrtag Rd_GPR129csp, Rn_GPR129csp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=2 & b_10=0 & b_1521=0b11 & b_1314=0 & Rd_GPR129csp & Rn_GPR129csp
+{}
+
+# preferred over CPY 
+:mov Rd_GPR129csp, Rn_GPR129csp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=2 & b_10=0 & b_1521=0b11 & b_1314=2 & Rd_GPR129csp & Rn_GPR129csp
+{}
+
+## Morello branch (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=4 & b_1112=2 & b_10=0 & b_0004=0)
+# BR (indirect)
+:br Rn_GPR129
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=4 & b_1112=2 & b_10=0 & b_0004=0 & b_1314=0 & Rn_GPR129
+{}
+
+# BLR (indirect)
+:blr Rn_GPR129
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=4 & b_1112=2 & b_10=0 & b_0004=0 & b_1314=1 & Rn_GPR129
+{}
+
+:ret Rn_GPR129
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=4 & b_1112=2 & b_10=0 & b_0004=0 & b_1314=2 & Rn_GPR129
+{}
+
+:bx "#4"
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=4 & b_1112=2 & b_10=0 & b_0004=0 & b_1314=3 & b_0509=0b11111
+{}
+
+## Morello checks (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=4 & b_1112=2 & b_10=0 & b_0004=1)
+:chksld Rn_GPR129csp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=4 & b_1112=2 & b_10=0 & b_0004=1 & b_1314=0 & Rn_GPR129csp
+{}
+
+:chktgd Rn_GPR129csp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=4 & b_1112=2 & b_10=0 & b_0004=1 & b_1314=1 & Rn_GPR129csp
+{}
+
+## Morello branch sealed direct (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=4 & b_1112=2 & b_10=0 & b_0004=2)
+# BRS (capability)
+:brs Rn_GPR129
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=4 & b_1112=2 & b_10=0 & b_0004=2 & b_1314=0 & Rn_GPR129
+{}
+
+# BLRS (capability)
+:blrs Rn_GPR129
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=4 & b_1112=2 & b_10=0 & b_0004=2 & b_1314=1 & Rn_GPR129
+{}
+
+# RETS (capability)
+:rets Rn_GPR129
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=4 & b_1112=2 & b_10=0 & b_0004=2 & b_1314=2 & Rn_GPR129
+{}
+
+## Morello branch restricted (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=4 & b_1112=2 & b_10=0 & b_0004=3)
+:brr Rn_GPR129
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=4 & b_1112=2 & b_10=0 & b_0004=3 & b_1314=0 & Rn_GPR129
+{}
+
+:blrr Rn_GPR129
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=4 & b_1112=2 & b_10=0 & b_0004=3 & b_1314=1 & Rn_GPR129
+{}
+
+:retr Rn_GPR129
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=4 & b_1112=2 & b_10=0 & b_0004=3 & b_1314=2 & Rn_GPR129
+{}
+
+## SEAL (immediate) 
+:seal Rd_GPR129, Rn_GPR129, form
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=6 & b_1112=2 & b_10=0 & Rd_GPR129 & Rn_GPR129 & form
+{}
+
+## Morello load pair and branch (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=8 & b_1112=2 & b_10=0)
+:ldpbr Rt_GPR129, CAddrReg
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=8 & b_1112=2 & b_10=0 & b_1314=0 & Rt_GPR129 & CAddrReg
+{}
+
+:ldpblr Rt_GPR129, CAddrReg
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=8 & b_1112=2 & b_10=0 & b_1314=1 & Rt_GPR129 & CAddrReg
+{}
+
+## Morello load/store tags (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=9 & b_1112=2 & b_10=0)
+:stct Rt_GPR64, CAddrReg
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=9 & b_1112=2 & b_10=0 & b_1314=0 & Rt_GPR64 & CAddrReg
+{}
+
+:ldct Rt_GPR64, CAddrReg
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=9 & b_1112=2 & b_10=0 & b_1314=1 & Rt_GPR64 & CAddrReg
+{}
+
+## Morello convert to pointer (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=10 & b_1112=2 & b_10=0)
+# CVTD (to pointer)
+:cvtd Rd_GPR64, Rn_GPR129csp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=10 & b_1112=2 & b_10=0 & b_1314=0 & Rd_GPR64 & Rn_GPR129csp
+{}
+
+# CVTP (to pointer)
+:cvtp Rd_GPR64, Rn_GPR129csp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=10 & b_1112=2 & b_10=0 & b_1314=1 & Rd_GPR64 & Rn_GPR129csp
+{}
+
+## Morello convert to capability with implicit operand (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=11 & b_1112=2 & b_10=0)
+# CVTD (to capability)
+:cvtd Rd_GPR129, Rn_GPR64
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=11 & b_1112=2 & b_10=0 & b_1314=0 & Rd_GPR129 & Rn_GPR64
+{}
+
+# CVTP (to capability)
+:cvtp Rd_GPR129, Rn_GPR64
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=11 & b_1112=2 & b_10=0 & b_1314=1 & Rd_GPR129 & Rn_GPR64
+{}
+
+:cvtdz Rd_GPR129, Rn_GPR64
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=11 & b_1112=2 & b_10=0 & b_1314=2 & Rd_GPR129 & Rn_GPR64
+{}
+
+:cvtpz Rd_GPR129, Rn_GPR64
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=11 & b_1112=2 & b_10=0 & b_1314=3 & Rd_GPR129 & Rn_GPR64
+{}
+
+## CLRPERM (immediate)
+:clrperm Rd_GPR129csp, Rn_GPR129csp, perm
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1621=6 & b_1112=2 & b_10=0 & Rd_GPR129csp & Rn_GPR129csp & perm
+{}
+
+## Morello 1 src 1 dest (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=14 & b_1112=2 & b_10=0)
+:rrlen Rd_GPR64, Rn_GPR64
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=14 & b_1112=2 & b_10=0 & b_1314=0 & Rd_GPR64 & Rn_GPR64
+{}
+
+:rrmask Rd_GPR64, Rn_GPR64
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=14 & b_1112=2 & b_10=0 & b_1314=1 & Rd_GPR64 & Rn_GPR64
+{}
+
+## Morello branch sealed indirect (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_2021=1 & b_1112=2 & b_10=0 & b_0104=0)
+# BR (memory indirect)
+:br "["^Rn_GPR129csp, "#"^pimm^"]"
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_2021=1 & b_1112=2 & b_10=0 & b_0104=0 & b_00=0 & Rn_GPR129csp & morello.simm7
+[ pimm = morello.simm7 << 4; ]
+{}
+
+# BLR (memory indirect)
+:blr "["^Rn_GPR129csp, "#"^pimm^"]"
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_2021=1 & b_1112=2 & b_10=0 & b_0104=0 & b_00=1 & Rn_GPR129csp & morello.simm7
+[ pimm = morello.simm7 << 4; ]
+{}
+
+## Morello set field 1 (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=0 & b_15=0 & b_21=0)
+# SCBNDS (register)
+:scbnds Rd_GPR129csp, Rn_GPR129csp, Rm_GPR64
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=0 & b_15=0 & b_21=0 & b_1314=0 & Rd_GPR129csp & Rn_GPR129csp & Rm_GPR64
+{}
+
+:scbndse Rd_GPR129csp, Rn_GPR129csp, Rm_GPR64
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=0 & b_15=0 & b_21=0 & b_1314=1 & Rd_GPR129csp & Rn_GPR129csp & Rm_GPR64
+{}
+
+:scvalue Rd_GPR129csp, Rn_GPR129csp, Rm_GPR64
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=0 & b_15=0 & b_21=0 & b_1314=2 & Rd_GPR129csp & Rn_GPR129csp & Rm_GPR64
+{}
+
+:scoff Rd_GPR129csp, Rn_GPR129csp, Rm_GPR64
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=0 & b_15=0 & b_21=0 & b_1314=3 & Rd_GPR129csp & Rn_GPR129csp & Rm_GPR64
+{}
+
+## Morello miscellaneous capability 1 (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=1 & b_15=0 & b_21=0)
+:build Rd_GPR129csp, Rn_GPR129csp, Rm_GPR129csp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=1 & b_15=0 & b_21=0 & b_1314=0 & Rd_GPR129csp & Rn_GPR129csp & Rm_GPR129csp
+{}
+
+:cpytype Rd_GPR129, Rn_GPR129, Rm_GPR129
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=1 & b_15=0 & b_21=0 & b_1314=1 & Rd_GPR129 & Rn_GPR129 & Rm_GPR129
+{}
+
+:cseal Rd_GPR129csp, Rn_GPR129csp, Rm_GPR129csp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=1 & b_15=0 & b_21=0 & b_1314=2 & Rd_GPR129csp & Rn_GPR129csp & Rm_GPR129csp
+{}
+
+:cpyvalue Rd_GPR129, Rn_GPR129, Rm_GPR129
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=1 & b_15=0 & b_21=0 & b_1314=3 & Rd_GPR129 & Rn_GPR129 & Rm_GPR129
+{}
+
+## Morello set field 2 (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=0 & b_15=1 & b_21=0 & b_14=0)
+:sctag Rd_GPR129csp, Rn_GPR129csp, Rm_GPR64
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=0 & b_15=1 & b_21=0 & b_14=0 & b_13=0 & Rd_GPR129csp & Rn_GPR129csp & Rm_GPR64
+{}
+
+# CLRPERM (register)
+:clrperm Rd_GPR129csp, Rn_GPR129csp, Rm_GPR64
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=0 & b_15=1 & b_21=0 & b_14=0 & b_13=1 & Rd_GPR129csp & Rn_GPR129csp & Rm_GPR64
+{}
+
+## CVT (to pointer)
+:cvt Rd_GPR64, Rn_GPR129csp, Rm_GPR129
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=0 & b_1315=0b110 & b_21=0 & Rd_GPR64 & Rn_GPR129csp & Rm_GPR129
+{}
+
+## SCFLGS
+:scflgs Rd_GPR129csp, Rn_GPR129csp, Rm_GPR64
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=0 & b_1315=0b111 & b_21=0 & Rd_GPR129csp & Rn_GPR129csp & Rm_GPR64
+{}
+
+## Morello branch to sealed (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=1 & b_15=1 & b_21=0 & b_0004=0)
+# BRS (pair of capabilities)
+:brs "c29", Rn_GPR129, Rm_GPR129
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=1 & b_15=1 & b_21=0 & b_0004=0 & b_1314=0 & Rn_GPR129 & Rm_GPR129
+{}
+
+# BLRS (pair of capabilities)
+:blrs "c29", Rn_GPR129, Rm_GPR129
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=1 & b_15=1 & b_21=0 & b_0004=0 & b_1314=1 & Rn_GPR129 & Rm_GPR129
+{}
+
+# RETS (pair of capabilities)
+:rets "c29", Rn_GPR129, Rm_GPR129
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=1 & b_15=1 & b_21=0 & b_0004=0 & b_1314=2 & Rn_GPR129 & Rm_GPR129
+{}
+
+## Morello 2 src cap (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=1 & b_15=1 & b_21=0 & b_0004=1)
+:chkss Rn_GPR129csp, Rm_GPR129csp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=1 & b_15=1 & b_21=0 & b_0004=1 & b_1314=0 & Rn_GPR129csp & Rm_GPR129csp
+{}
+
+:chkeq Rn_GPR129csp, Rm_GPR129
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=0 & b_10=1 & b_15=1 & b_21=0 & b_0004=1 & b_1314=1 & Rn_GPR129csp & Rm_GPR129
+{}
+
+## Morello miscellaneous capability 2 (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=1 & b_10=0 & b_13=0 & b_21=0)
+# SEAL (capability)
+:seal Rd_GPR129, Rn_GPR129, Rm_GPR129
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=1 & b_10=0 & b_13=0 & b_21=0 & b_1415=0 & Rd_GPR129 & Rn_GPR129 & Rm_GPR129
+{}
+
+:unseal Rd_GPR129, Rn_GPR129, Rm_GPR129
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=1 & b_10=0 & b_13=0 & b_21=0 & b_1415=1 & Rd_GPR129 & Rn_GPR129 & Rm_GPR129
+{}
+
+:chkssu Rd_GPR129, Rn_GPR129csp, Rm_GPR129csp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=1 & b_10=0 & b_13=0 & b_21=0 & b_1415=2 & Rd_GPR129 & Rn_GPR129csp & Rm_GPR129csp
+{}
+
+## Morello alignment (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=3 & b_10=0 & b_13=0 & b_21=0)
+:alignd Rd_GPR129csp, Rn_GPR129csp, UImm6
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=3 & b_10=0 & b_13=0 & b_21=0 & b_14=0 & Rd_GPR129csp & Rn_GPR129csp & UImm6
+{}
+
+:alignu Rd_GPR129csp, Rn_GPR129csp, UImm6
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=3 & b_10=0 & b_13=0 & b_21=0 & b_14=1 & Rd_GPR129csp & Rn_GPR129csp & UImm6
+{}
+
+## Morello bitwise (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=1 & b_10=0 & b_13=1 & b_21=0)
+# BICFLGS (register)
+:bicflgs Rd_GPR129csp, Rn_GPR129csp, Rm_GPR64
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=1 & b_10=0 & b_13=1 & b_21=0 & b_1415=0 & Rd_GPR129csp & Rn_GPR129csp & Rm_GPR64
+{}
+
+# ORRFLGS (register)
+:orrflgs Rd_GPR129csp, Rn_GPR129csp, Rm_GPR64
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=1 & b_10=0 & b_13=1 & b_21=0 & b_1415=1 & Rd_GPR129csp & Rn_GPR129csp & Rm_GPR64
+{}
+
+# EORFLGS (register)
+:eorflgs Rd_GPR129csp, Rn_GPR129csp, Rm_GPR64
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=1 & b_10=0 & b_13=1 & b_21=0 & b_1415=2 & Rd_GPR129csp & Rn_GPR129csp & Rm_GPR64
+{}
+
+:cthi Rd_GPR129csp, Rn_GPR129, Rm_GPR64
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=1 & b_10=0 & b_13=1 & b_21=0 & b_1415=3 & Rd_GPR129csp & Rn_GPR129 & Rm_GPR64
+{}
+
+## Morello immediate bounds (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=3 & b_10=0 & b_13=1 & b_21=0)
+:scbnds Rd_GPR129, Rn_GPR129, UImm6
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=3 & b_10=0 & b_13=1 & b_21=0 & b_14=0 & Rd_GPR129 & Rn_GPR129 & UImm6
+{}
+
+:scbnds Rd_GPR129, Rn_GPR129, UImm6, "LSL #4"
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=3 & b_10=0 & b_13=1 & b_21=0 & b_14=1 & Rd_GPR129 & Rn_GPR129 & UImm6
+{}
+
+## CSEL
+:csel Rd_GPR129, Rn_GPR129, Rm_GPR129, BranchCondOp
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_11=1 & b_10=1 & b_21=0 & Rd_GPR129 & Rn_GPR129 & Rm_GPR129 & BranchCondOp
+{}
+
+## Morello convert to capability (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=3 & b_10=0 & b_21=1 & b_13=0 & b_15=0)
+# CVT (to capability)
+:cvt Rd_GPR129, Rn_GPR129csp, Rm_GPR64
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=3 & b_10=0 & b_21=1 & b_13=0 & b_15=0 & b_14=0 & Rd_GPR129 & Rn_GPR129csp & Rm_GPR64
+{}
+
+:cvtz Rd_GPR129, Rn_GPR129csp, Rm_GPR64
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=3 & b_10=0 & b_21=1 & b_13=0 & b_15=0 & b_14=1 & Rd_GPR129 & Rn_GPR129csp & Rm_GPR64
+{}
+
+## SUBS
+:subs Rd_GPR64, Rn_GPR129, Rm_GPR129
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=3 & b_10=0 & b_21=1 & b_1315=4 & Rd_GPR64 & Rn_GPR129 & Rm_GPR129
+{}
+
+## Morello load/store capability via alternate base (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_10=1 & b_21=1 & b_14=1)
+# STR (register offset, capability, alternate base)
+:str Rt_GPR129, CAddrIndexed
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_10=1 & b_21=1 & b_14=1 & b_11=0 & Rt_GPR129 & CAddrIndexed
+{}
+
+# LDR (register offset, capability, alternate base)
+:ldr Rt_GPR129, CAddrIndexed
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_10=1 & b_21=1 & b_14=1 & b_11=1 & Rt_GPR129 & CAddrIndexed
+{}
+
+## Morello logical immediate (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_10=0 & b_21=1)
+# BICFLGS (immediate)
+:bicflgs Rd_GPR129csp, Rn_GPR129csp, UImm8
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_10=0 & b_21=1 & b_1112=0 & Rd_GPR129csp & Rn_GPR129csp & UImm8
+{}
+
+# ORRFLGS (immediate)
+:orrflgs Rd_GPR129csp, Rn_GPR129csp, UImm8
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_10=0 & b_21=1 & b_1112=1 & Rd_GPR129csp & Rn_GPR129csp & UImm8
+{}
+
+# EORFLGS (immediate)
+:eorflgs Rd_GPR129csp, Rn_GPR129csp, UImm8
+is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_10=0 & b_21=1 & b_1112=2 & Rd_GPR129csp & Rn_GPR129csp & UImm8
+{}

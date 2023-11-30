@@ -69,7 +69,8 @@ public class LittleEndianDataConverter implements DataConverter {
 	@Override
 	public long getValue(byte[] b, int offset, int size) {
 		Objects.checkFromIndexSize(offset, size, b.length);
-		Objects.checkIndex(size, Long.BYTES + 1);
+		// Objects.checkIndex(size, Long.BYTES + 1);
+		Objects.checkIndex(size, Long.BYTES * 2 + 1);  // considering CHERI capabilities
 
 		long val = 0;
 		for (int i = size - 1; i >= 0; i--) {
