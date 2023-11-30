@@ -26,10 +26,12 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import db.Transaction;
 import ghidra.framework.data.DomainObjectEventQueues;
+import ghidra.framework.data.DomainObjectFileListener;
 import ghidra.framework.model.*;
 import ghidra.framework.options.Options;
 import ghidra.framework.store.LockException;
 import ghidra.program.database.IntRangeMap;
+import ghidra.program.database.ProgramOverlayAddressSpace;
 import ghidra.program.database.map.AddressMap;
 import ghidra.program.model.address.*;
 import ghidra.program.model.data.*;
@@ -63,8 +65,7 @@ import ghidra.trace.model.thread.TraceThread;
 import ghidra.trace.util.TraceAddressSpace;
 import ghidra.util.*;
 import ghidra.util.datastruct.WeakValueHashMap;
-import ghidra.util.exception.CancelledException;
-import ghidra.util.exception.DuplicateNameException;
+import ghidra.util.exception.*;
 import ghidra.util.task.TaskMonitor;
 
 /**
@@ -480,7 +481,7 @@ public class DBTraceProgramView implements TraceProgramView {
 			queues.fireEvent(new ProgramChangeRecord(ChangeManager.DOCR_LENGTH_OVERRIDE_CHANGED,
 				instruction.getMinAddress(), instruction.getMinAddress(), null, null, null));
 		}
-		
+
 		private void memoryBytesChanged(TraceAddressSpace space, TraceAddressSnapRange range,
 				byte[] oldIsNull, byte[] bytes) {
 			DomainObjectEventQueues queues = isBytesVisible(space, range);
@@ -1022,6 +1023,25 @@ public class DBTraceProgramView implements TraceProgramView {
 	}
 
 	@Override
+	public ProgramOverlayAddressSpace createOverlaySpace(String overlaySpaceName,
+			AddressSpace baseSpace) throws IllegalStateException, DuplicateNameException,
+			InvalidNameException, LockException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void renameOverlaySpace(String oldOverlaySpaceName, String newName)
+			throws NotFoundException, InvalidNameException, DuplicateNameException, LockException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean removeOverlaySpace(String overlaySpaceName)
+			throws LockException, NotFoundException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public AddressFactory getAddressFactory() {
 		return trace.getBaseAddressFactory();
 	}
@@ -1253,6 +1273,16 @@ public class DBTraceProgramView implements TraceProgramView {
 	@Override
 	public void removeCloseListener(DomainObjectClosedListener listener) {
 		trace.removeCloseListener(listener);
+	}
+
+	@Override
+	public void addDomainFileListener(DomainObjectFileListener listener) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void removeDomainFileListener(DomainObjectFileListener listener) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
