@@ -1,18 +1,3 @@
-/* ###
- * IP: GHIDRA
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package ghidra.app.plugin.core.analysis;
 
 import java.io.FileNotFoundException;
@@ -41,21 +26,21 @@ import ghidra.util.exception.AssertException;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
-public class AARCH64PltThunkAnalyzer extends AbstractAnalyzer {
+public class MorelloPltThunkAnalyzer extends AbstractAnalyzer {
 	
-	private static final String NAME = "AARCH64 ELF PLT Thunks";
-	private static final String DESCRIPTION = "Create AARCH64 ELF PLT thunk functions";
+	private static final String NAME = "Morello C64 ELF PLT Thunks";
+	private static final String DESCRIPTION = "Create AARCH64 C64 ELF PLT thunk functions";
 	private static final String PROCESSOR_NAME = "AARCH64";
 	
-	private static final String PLT_THUNK_PATTERN_FILE = "aarch64-pltThunks.xml";
+	private static final String PLT_THUNK_PATTERN_FILE = "morello-pltThunks.xml";
 	
 	private static boolean patternLoadFailed;
 	private static ArrayList<Pattern> leThunkPatterns;
 	private static int maxPatternLength;
 	
-	private Register x17Reg;
+	private Register c17Reg;
 	
-	public AARCH64PltThunkAnalyzer() {
+	public MorelloPltThunkAnalyzer() {
 		super(NAME, DESCRIPTION, AnalyzerType.BYTE_ANALYZER); // assumes ELF Loader disassembled PLT section
 		setDefaultEnablement(true);
 		setPriority(AnalysisPriority.FORMAT_ANALYSIS);
@@ -64,11 +49,10 @@ public class AARCH64PltThunkAnalyzer extends AbstractAnalyzer {
 	@Override
 	public boolean canAnalyze(Program program) {
 		Language language = program.getLanguage();
-		// TODO: what about 32/64 hybrid case?
 		if (PROCESSOR_NAME.equals(language.getProcessor().toString()) &&
 				patternsLoaded(language.isBigEndian())) {
-			x17Reg = program.getRegister("x17");
-			return x17Reg != null;
+			c17Reg = program.getRegister("c17");
+			return c17Reg != null;
 		}
 		return false;
 	}
@@ -99,11 +83,11 @@ public class AARCH64PltThunkAnalyzer extends AbstractAnalyzer {
 			}
 			
 		} catch (FileNotFoundException e) {
-			Msg.error(AARCH64PltThunkAnalyzer.class, "AARCH64 resource file not found: " + PLT_THUNK_PATTERN_FILE);
+			Msg.error(MorelloPltThunkAnalyzer.class, "AARCH64 resource file not found: " + PLT_THUNK_PATTERN_FILE);
 			patternLoadFailed = true;
 			return false;
 		} catch (SAXException | IOException e) {
-			Msg.error(AARCH64PltThunkAnalyzer.class, "Failed to parse byte pattern file: " + PLT_THUNK_PATTERN_FILE, e);
+			Msg.error(MorelloPltThunkAnalyzer.class, "Failed to parse byte pattern file: " + PLT_THUNK_PATTERN_FILE, e);
 			patternLoadFailed = true;
 			return false;
 		}
@@ -198,15 +182,16 @@ public class AARCH64PltThunkAnalyzer extends AbstractAnalyzer {
 			@Override
 			public boolean evaluateDestination(VarnodeContext context, Instruction instruction) {
 				
-				// We only handle indirect branch through x17 register
-				if (!"br".equals(instruction.getMnemonicString()) || !x17Reg.equals(instruction.getRegister(0))) {
+				// We only handle indirect branch through c17 register
+				if (!"br".equals(instruction.getMnemonicString()) || !c17Reg.equals(instruction.getRegister(0))) {
 					return true;
 				}
 				
 				// Change br flow to call-return
 				instruction.setFlowOverride(FlowOverride.CALL_RETURN);
 				
-				RegisterValue x17Value = context.getRegisterValue(x17Reg);
+				// FIXME: for now, just ignore capability metadata
+				RegisterValue x17Value = context.getRegisterValue(program.getRegister("x17"));
 				if (x17Value != null && x17Value.hasValue()) {
 					Address destAddr = entryAddr.getNewAddress(x17Value.getUnsignedValue().longValue());
 					Function thunkedFunction = createDestinationFunction(program, destAddr, instruction.getAddress(),

@@ -1,0 +1,30 @@
+<patternlist>  
+  <patternpairs totalbits="32" postbits="16">  <!-- AARCH64 C64 -->
+    <prepatterns>
+      <data>0xc0 0x53 0xc2 0xc2                  </data> <!-- ret c30 -->
+      <!-- TODO: Other RETs -->
+    </prepatterns>
+    
+    <postpatterns>
+      <data> 111..... .1....11 10...... 0xa9 </data> <!-- stp c, c, [csp, -0x.0]! -->
+      <data> 0xff ..000011 100..... 0x02 </data> <!-- sub csp, csp, #... -->
+      <codeboundary/>
+      <possiblefuncstart/>
+    </postpatterns>
+  </patternpairs>
+
+  <!-- TODO: other patterns -->
+
+  <pattern> <!-- AARCH64 C64 Thunk -->
+      <data> ...10000 ........ ........ 1..10000 
+             0x10 ......10 00...... 0x02 
+             0x11 0x02 0x40 0xc2 
+             0x20 0x12 0xc2 0xc2   </data>
+      <!-- adrp c16, #...
+           add  c16, c16, #...
+           ldr  c17, [c16]
+           br   c17
+       -->
+      <funcstart validcode="function" thunk="true"/>
+  </pattern>
+</patternlist>

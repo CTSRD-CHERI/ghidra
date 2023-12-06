@@ -2,4 +2,7 @@
   <language id="AARCH64:*:64:*">
     <patternfile>AARCH64_LE_patterns.xml</patternfile>
   </language>
+  <language id="AARCH64:LE:64:v8C">
+    <patternfile>AARCH64_C64_patterns.xml</patternfile>
+  </language>
 </patternconstraints>

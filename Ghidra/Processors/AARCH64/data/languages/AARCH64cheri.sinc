@@ -536,7 +536,10 @@ is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=2 & b_10=0 & b_1521=
 # BR (indirect)
 :br Rn_GPR129
 is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=4 & b_1112=2 & b_10=0 & b_0004=0 & b_1314=0 & Rn_GPR129
-{}
+{
+	pc = Rn_GPR129:8;
+	goto [pc];
+}
 
 # BLR (indirect)
 :blr Rn_GPR129
@@ -545,7 +548,10 @@ is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=4 & b_1112=2 & b_10=
 
 :ret Rn_GPR129
 is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=4 & b_1112=2 & b_10=0 & b_0004=0 & b_1314=2 & Rn_GPR129
-{}
+{
+    pc = x30;
+	return [pc];
+}
 
 :bx "#4"
 is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1521=4 & b_1112=2 & b_10=0 & b_0004=0 & b_1314=3 & b_0509=0b11111

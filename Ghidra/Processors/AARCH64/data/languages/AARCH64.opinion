@@ -1,6 +1,8 @@
 <opinions>
     <constraint loader="Executable and Linking Format (ELF)" compilerSpecID="default">
         <constraint primary="183" secondary="0" processor="AARCH64" size="64" variant="v8A" />
+    </constraint>
+    <constraint loader="Executable and Linking Format (ELF)" compilerSpecID="clang-morello">
         <constraint primary="183" secondary="65536" processor="AARCH64" endian="little" size="64" variant="v8C" />
     </constraint>
     <constraint loader="Executable and Linking Format (ELF)" compilerSpecID="default">

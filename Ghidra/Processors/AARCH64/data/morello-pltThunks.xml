@@ -1,0 +1,22 @@
+<patternlist>
+  <!-- 
+  	This file contains Morello ELF PLT Thunk patterns.
+  -->
+  <pattern>
+     <data>
+     	...10000 0x.. 0x.. 1..10000 # adrp c16, PLTGOT + n * 8
+        0x10 ......10 00...... 0x02 # add c16, c16, :lo12:PLTGOT + n * 8
+     	0x11 0x02 0x40 0xc2         # ldr c17, [c16]
+     	0x20 0x12 0xc2 0xc2         # br c17
+     </data>
+  </pattern>
+  <pattern>
+     <data>
+     	...10000 0x.. 0x.. 1..10000 # adrp c16, PLTGOT + n * 8
+        0x11 ......10 01...... 0xc2 # ldr c17, [c16, PLTGOT + n * 8]
+        0x10 ......10 00...... 0x02 # add c16, c16, :lo12:PLTGOT + n * 8
+     	0x20 0x12 0xc2 0xc2         # br c17
+     </data>
+  </pattern>
+  <!-- TODO: Morello compiler generates different patterns for the PLT main thunk and PLT function thunks -->
+</patternlist>

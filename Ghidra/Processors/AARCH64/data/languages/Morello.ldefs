@@ -1,6 +1,5 @@
 <?xml version="1.1" encoding="UTF-8"?>
 <language_definitions>
-  <!-- TODO: should this be in AARCH64.ldefs? -->
   <language processor="AARCH64"
             endian="little"
             size="64"
@@ -10,8 +9,8 @@
             processorspec="AARCH64_Morello.pspec"
             manualindexfile="../manuals/AARCH64.idx"
             id="AARCH64:LE:64:v8C">
-    <description>Generic ARM64 v8.5-C LE instructions, LE data, missing some 8.5 vector</description>
-    <compiler name="Morello LLVM" spec="AARCH64_Morello.cspec" id="morello-llvm"/>
+    <description>Generic ARM64 v8.5-A with C64 support, LE instructions, LE data, missing some 8.5 vector</description>
+    <compiler name="clang" spec="AARCH64_Morello.cspec" id="clang-morello"/>
     <external_name tool="gnu" name="aarch64"/>
     <external_name tool="DWARF.register.mapping.file" name="AARCH64_Morello.dwarf"/>
   </language>
