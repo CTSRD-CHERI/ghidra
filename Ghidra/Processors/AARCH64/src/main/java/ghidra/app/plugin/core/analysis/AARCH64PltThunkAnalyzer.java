@@ -46,7 +46,8 @@ public class AARCH64PltThunkAnalyzer extends AbstractAnalyzer {
 	private static final String NAME = "AARCH64 ELF PLT Thunks";
 	private static final String DESCRIPTION = "Create AARCH64 ELF PLT thunk functions";
 	private static final String PROCESSOR_NAME = "AARCH64";
-	
+
+	private static final String MORELLO_COMPILER_SPEC_ID = "clang-morello";
 	private static final String PLT_THUNK_PATTERN_FILE = "aarch64-pltThunks.xml";
 	
 	private static boolean patternLoadFailed;
@@ -64,8 +65,10 @@ public class AARCH64PltThunkAnalyzer extends AbstractAnalyzer {
 	@Override
 	public boolean canAnalyze(Program program) {
 		Language language = program.getLanguage();
+		CompilerSpec compilerSpec = program.getCompilerSpec();
 		// TODO: what about 32/64 hybrid case?
 		if (PROCESSOR_NAME.equals(language.getProcessor().toString()) &&
+				!MORELLO_COMPILER_SPEC_ID.equals(compilerSpec.getCompilerSpecID().getIdAsString()) &&
 				patternsLoaded(language.isBigEndian())) {
 			x17Reg = program.getRegister("x17");
 			return x17Reg != null;

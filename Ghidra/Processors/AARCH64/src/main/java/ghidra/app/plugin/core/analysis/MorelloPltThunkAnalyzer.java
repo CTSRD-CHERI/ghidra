@@ -31,7 +31,8 @@ public class MorelloPltThunkAnalyzer extends AbstractAnalyzer {
 	private static final String NAME = "Morello C64 ELF PLT Thunks";
 	private static final String DESCRIPTION = "Create AARCH64 C64 ELF PLT thunk functions";
 	private static final String PROCESSOR_NAME = "AARCH64";
-	
+
+	private static final String MORELLO_COMPILER_SPEC_ID = "clang-morello";
 	private static final String PLT_THUNK_PATTERN_FILE = "morello-pltThunks.xml";
 	
 	private static boolean patternLoadFailed;
@@ -49,7 +50,9 @@ public class MorelloPltThunkAnalyzer extends AbstractAnalyzer {
 	@Override
 	public boolean canAnalyze(Program program) {
 		Language language = program.getLanguage();
+		CompilerSpec compilerSpec = program.getCompilerSpec();
 		if (PROCESSOR_NAME.equals(language.getProcessor().toString()) &&
+				MORELLO_COMPILER_SPEC_ID.equals(compilerSpec.getCompilerSpecID().getIdAsString()) &&
 				patternsLoaded(language.isBigEndian())) {
 			c17Reg = program.getRegister("c17");
 			return c17Reg != null;
@@ -83,7 +86,7 @@ public class MorelloPltThunkAnalyzer extends AbstractAnalyzer {
 			}
 			
 		} catch (FileNotFoundException e) {
-			Msg.error(MorelloPltThunkAnalyzer.class, "AARCH64 resource file not found: " + PLT_THUNK_PATTERN_FILE);
+			Msg.error(MorelloPltThunkAnalyzer.class, "Morello resource file not found: " + PLT_THUNK_PATTERN_FILE);
 			patternLoadFailed = true;
 			return false;
 		} catch (SAXException | IOException e) {
