@@ -27,15 +27,25 @@ import ghidra.program.model.reloc.RelocationResult;
 import ghidra.util.exception.NotFoundException;
 
 public class AARCH64_ElfRelocationHandler extends ElfRelocationHandler {
+	private boolean isCheriPurecap = false;
 
 	@Override
 	public boolean canRelocate(ElfHeader elf) {
+		if (elf.e_flags() == AARCH64_ElfRelocationConstants.EF_AARCH64_CHERI_PURECAP) {
+			isCheriPurecap = true;
+		} else {
+			isCheriPurecap = false;
+		}
 		return elf.e_machine() == ElfConstants.EM_AARCH64;
 	}
 
 	@Override
 	public int getRelrRelocationType() {
-		return AARCH64_ElfRelocationConstants.R_AARCH64_RELATIVE;
+		if (isCheriPurecap) {
+			return AARCH64_ElfRelocationConstants.R_MORELLO_RELATIVE;
+		} else {
+			return AARCH64_ElfRelocationConstants.R_AARCH64_RELATIVE;
+		}
 	}
 
 	@Override
@@ -381,6 +391,55 @@ public class AARCH64_ElfRelocationHandler extends ElfRelocationHandler {
 				markAsWarning(program, relocationAddress, "R_AARCH64_COPY", symbolName, symbolIndex,
 					"Runtime copy not supported", elfRelocationContext.getLog());
 				return RelocationResult.UNSUPPORTED;
+			}
+
+			// Morello relocations
+			// TODO: CAPINIT for statically linked binaries
+
+			case AARCH64_ElfRelocationConstants.R_MORELLO_GLOB_DAT: {
+				// Corresponds to resolved local/EXTERNAL symbols within GOT
+				if (elfRelocationContext.extractAddend()) {
+					addend = getValue(memory, relocationAddress, true);
+				}
+				newValue = symbolValue + addend;
+				byteLength = setValue(memory, relocationAddress, newValue, true);
+				break;
+			}
+
+			case AARCH64_ElfRelocationConstants.R_MORELLO_JUMP_SLOT: {
+				// Corresponds to lazy dynamically linked external symbols within
+				// GOT/PLT symbolValue corresponds to PLT entry for which we need to
+				// create and external function location. Don't bother changing
+				// GOT entry bytes if it refers to .plt block
+				Address symAddress = elfRelocationContext.getSymbolAddress(sym);
+				MemoryBlock block = memory.getBlock(symAddress);
+				// TODO: jump slots are always in GOT - not sure why PLT check is done
+				boolean isPltSym = block != null && block.getName().startsWith(".plt");
+				boolean isExternalSym =
+					block != null && MemoryBlock.EXTERNAL_BLOCK_NAME.equals(block.getName());
+				if (!isPltSym) {
+					byteLength =
+						setValue(memory, relocationAddress, symAddress.getOffset(), true);
+				}
+				if ((isPltSym || isExternalSym) && !StringUtils.isBlank(symbolName)) {
+					Function extFunction =
+						elfRelocationContext.getLoadHelper().createExternalFunctionLinkage(
+							symbolName, symAddress, null);
+					if (extFunction == null) {
+						markAsError(program, relocationAddress, "R_MORELLO_JUMP_SLOT", symbolName,
+							"Failed to create R_MORELLO_JUMP_SLOT external function",
+							elfRelocationContext.getLog());
+						// relocation already applied above
+					}
+				}
+				break;
+			}
+
+			case AARCH64_ElfRelocationConstants.R_MORELLO_RELATIVE: {
+				long oldValue = getValue(memory, relocationAddress, true);
+				newValue = elfRelocationContext.getImageBaseWordAdjustmentOffset() + oldValue;
+				byteLength = setValue(memory, relocationAddress, newValue, true);
+				break;
 			}
 
 			default: {

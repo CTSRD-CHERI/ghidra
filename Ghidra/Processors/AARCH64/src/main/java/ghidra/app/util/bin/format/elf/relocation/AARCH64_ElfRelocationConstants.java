@@ -327,7 +327,7 @@ public class AARCH64_ElfRelocationConstants {
 	// Create GOT entry.  
 	public static final int R_AARCH64_GLOB_DAT = 1025;
 
-	 // Create PLT entry.  
+	// Create PLT entry.  
 	public static final int R_AARCH64_JUMP_SLOT = 1026;
 
 	// Adjust by program base.  
@@ -342,6 +342,32 @@ public class AARCH64_ElfRelocationConstants {
 
 	public static final int R_AARCH64_TLSDESC = 1031;
 	public static final int R_AARCH64_IRELATIVE = 1032;
+
+	//// Morello relocations
+
+	// TODO: write comments
+	// public static final int R_MORELLO_LD_PREL_LO17 = 57348;
+	
+	// ...
+
+	// TODO: explain capdesc
+	public static final int R_MORELLO_CAPINIT = 59392;
+
+	// Create GOT entry.
+	public static final int R_MORELLO_GLOB_DAT = 59393;
+
+	// Create PLT entry.
+	public static final int R_MORELLO_JUMP_SLOT = 59394;
+
+	// Adjust by program base.
+	public static final int R_MORELLO_RELATIVE = 59395;
+	public static final int R_MORELLO_IRELATIVE = 59396;
+	public static final int R_MORELLO_TLSDESC = 59397;
+	
+	public static final int R_MORELLO_TPREL128 = 59398;
+
+    // Processor-specific flags for the ELF header e_flags field
+    public static final int EF_AARCH64_CHERI_PURECAP = 0x00010000;
 
 	private AARCH64_ElfRelocationConstants() {
 		// no construct
