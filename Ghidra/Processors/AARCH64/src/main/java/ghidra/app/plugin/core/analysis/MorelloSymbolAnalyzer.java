@@ -74,27 +74,9 @@ public class MorelloSymbolAnalyzer extends AbstractAnalyzer {
 			moveSymbols(program, address, newAddress);
 
 			updateEntryPoint(program, address, newAddress);
-
-			// setTModeRegister(program, newAddress);
-
 		}
 		return true;
 	}
-
-	// private void setTModeRegister(Program program, Address newAddress) {
-	// 	Listing listing = program.getListing();
-	// 	Register TModeRegister = program.getRegister("TMode");
-
-	// 	if (listing.getUndefinedDataAt(newAddress) != null) {
-	// 		try {
-	// 			program.getProgramContext().setValue(TModeRegister, newAddress, newAddress,
-	// 				new BigInteger("1"));
-	// 		}
-	// 		catch (ContextChangeException e) {
-	// 			Msg.error(this, "Unexpected Error", e);
-	// 		}
-	// 	}
-	// }
 
 	private void updateEntryPoint(Program program, Address address, Address newAddress) {
 		SymbolTable symbolTable = program.getSymbolTable();
@@ -169,8 +151,8 @@ public class MorelloSymbolAnalyzer extends AbstractAnalyzer {
 	public boolean canAnalyze(Program program) {
 		// Check language
 		return (program.getLanguage().getProcessor().equals(
-			Processor.findOrPossiblyCreateProcessor("AARCH64"))); // &&
-			// program.getRegister("TMode") != null);
+			Processor.findOrPossiblyCreateProcessor("AARCH64")) &&
+				program.getRegister("C64") != null);
 	}
 
 	@Override

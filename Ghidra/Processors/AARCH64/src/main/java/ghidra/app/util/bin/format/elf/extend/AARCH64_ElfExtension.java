@@ -21,6 +21,7 @@ import ghidra.app.util.bin.format.elf.*;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.lang.Language;
 import ghidra.program.model.listing.Program;
+import ghidra.util.Msg;
 
 public class AARCH64_ElfExtension extends ElfExtension {
 
@@ -57,8 +58,12 @@ public class AARCH64_ElfExtension extends ElfExtension {
 	public Address creatingFunction(ElfLoadHelper elfLoadHelper, Address functionAddress) {
 		Program program = elfLoadHelper.getProgram();
 		if ((functionAddress.getOffset() & 1) != 0) {
-			// TODO: check if it is C64 code
-			functionAddress = functionAddress.previous(); // align address
+			// check if C64 is available
+			if (program.getRegister("C64") == null) {
+				Msg.error(AARCH64_ElfExtension.class, "Invalid function address");
+			} else {
+				functionAddress = functionAddress.previous(); // align address
+			}
 		}
 		return functionAddress;
 	}

@@ -771,6 +771,7 @@ define context contextreg
 	PAC_clobber = (22,22) noflow
 	ShowBTI = (23,23) noflow
 	ShowMemTag = (24,24) noflow
+	C64 = (25,25)
 ;
 
 define token instrAARCH64 (32) endian = little
