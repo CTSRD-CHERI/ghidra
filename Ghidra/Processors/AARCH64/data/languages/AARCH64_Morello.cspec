@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <compiler_spec>
+  <!-- Copied from AARCH.cspec and modified...  -->
   <data_organization>
      <absolute_max_alignment value="0" />
      <machine_alignment value="4" />
      <default_alignment value="1" />
-     <default_pointer_alignment value="16" /> <!-- ??? -->
+     <default_pointer_alignment value="16" />
      <pointer_size value="16" />
      <wchar_size value="4" />
      <short_size value="2" />
@@ -28,7 +29,8 @@
     <range space="ram"/>
   </global>
   
-  <stackpointer register="csp" space="ram"/>
+  <stackpointer register="sp" space="ram"/> <!-- Only use the address value part of a capability 
+    in analyses involving stack pointer -->
   <funcptr align="4"/>     <!-- Function pointers are word aligned and leastsig bit may encode otherstuff -->
   
   <prefersplit style="inhalf">
@@ -92,29 +94,34 @@
         <pentry minsize="1" maxsize="8" metatype="float">
           <register name="d7"/>
         </pentry>
-        <pentry minsize="1" maxsize="8" extension="zero">
-          <register name="x0"/>
+        <pentry minsize="1" maxsize="16" extension="zero">
+          <register name="c0"/>
         </pentry>
-        <pentry minsize="1" maxsize="8" extension="zero">
-          <register name="x1"/>
+        <pentry minsize="1" maxsize="16" extension="zero">
+          <register name="c1"/>
         </pentry>
-        <pentry minsize="1" maxsize="8" extension="zero">
-          <register name="x2"/>
+        <pentry minsize="1" maxsize="16" extension="zero">
+          <register name="c2"/>
         </pentry>
-        <pentry minsize="1" maxsize="8" extension="zero">
-          <register name="x3"/>
+        <pentry minsize="1" maxsize="16" extension="zero">
+          <register name="c3"/>
         </pentry>
-        <pentry minsize="1" maxsize="8" extension="zero">
-          <register name="x4"/>
+        <pentry minsize="1" maxsize="16" extension="zero">
+          <register name="c4"/>
         </pentry>
-        <pentry minsize="1" maxsize="8" extension="zero">
-          <register name="x5"/>
+        <pentry minsize="1" maxsize="16" extension="zero">
+          <register name="c5"/>
         </pentry>
-        <pentry minsize="1" maxsize="8" extension="zero">
-          <register name="x6"/>
+        <pentry minsize="1" maxsize="16" extension="zero">
+          <register name="c6"/>
         </pentry>
-        <pentry minsize="1" maxsize="8" extension="zero">
-          <register name="x7"/>
+        <pentry minsize="1" maxsize="16" extension="zero">
+          <register name="c7"/>
+        </pentry>
+        <!-- TODO: discard the stack and use only c9 -->
+        <!-- c9: Parameter register for variadic calls -->
+        <pentry minsize="1" maxsize="16" extension="zero">
+          <register name="c9" />
         </pentry>
         <pentry minsize="1" maxsize="500" align="4">
           <addr offset="0" space="stack"/>
@@ -124,26 +131,27 @@
         <pentry minsize="1" maxsize="8" metatype="float">
           <register name="d0"/>
         </pentry>
-        <pentry minsize="1" maxsize="8" extension="zero">
-          <register name="x0"/>
+        <pentry minsize="1" maxsize="16" extension="zero">
+          <register name="c0"/>
         </pentry>
-        <pentry minsize="9" maxsize="16" extension="zero">
-          <addr space="join" piece1="x1" piece2="x0"/>
-        </pentry>
+        <!-- If the return value is greater than 16 bytes, use c18 -->
+        <!-- <pentry minsize="17" maxsize="32" extension="zero">
+          <addr space="join" piece1="c1" piece2="c0"/>
+        </pentry> -->
       </output>
       <unaffected>
-        <register name="x19"/>
-        <register name="x20"/>
-        <register name="x21"/>
-        <register name="x22"/> 
-        <register name="x23"/> 
-        <register name="x24"/> 
-        <register name="x25"/> 
-        <register name="x26"/> 
-        <register name="x27"/> 
-        <register name="x28"/>
-        <register name="x29"/>
-        <register name="x30"/>
+        <register name="c19"/>
+        <register name="c20"/>
+        <register name="c21"/>
+        <register name="c22"/> 
+        <register name="c23"/> 
+        <register name="c24"/> 
+        <register name="c25"/> 
+        <register name="c26"/> 
+        <register name="c27"/> 
+        <register name="c28"/>
+        <register name="c29"/>
+        <register name="c30"/>
         <register name="csp"/>
         <!-- vectors -->
         <register name="d8"/>
@@ -156,19 +164,19 @@
         <register name="d15"/>
       </unaffected>
       <killedbycall>
-        <!-- x8: indirect result location register, which is not
+        <!-- c8: indirect result location register, which is not
          reflected in the pentry list -->
-        <register name="x8"/>
-        <register name="x9"/>
-        <register name="x10"/>
-        <register name="x11"/>
-        <register name="x12"/>
-        <register name="x13"/>
-        <register name="x14"/>
-        <register name="x15"/>
-        <register name="x16"/>
-        <register name="x17"/>
-        <register name="x18"/>
+        <register name="c8"/>
+        <register name="c9"/>
+        <register name="c10"/>
+        <register name="c11"/>
+        <register name="c12"/>
+        <register name="c13"/>
+        <register name="c14"/>
+        <register name="c15"/>
+        <register name="c16"/>
+        <register name="c17"/>
+        <register name="c18"/>
         <!-- vectors -->
         <register name="d16"/>
         <register name="d17"/>

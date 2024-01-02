@@ -524,7 +524,7 @@ public class AARCH64_ElfExtension extends ElfExtension {
 		boolean imageBaseAlreadySet = elf.isPreLinked();
 
 		try {
-			int pointerSize = 16;
+			int pointerSize = program.getDataTypeManager().getDataOrganization().getPointerSize();
 			Address newImageBase = null;
 			Address nextGotAddr = gotStart;
 			while (gotEnd.subtract(nextGotAddr) >= pointerSize) {
