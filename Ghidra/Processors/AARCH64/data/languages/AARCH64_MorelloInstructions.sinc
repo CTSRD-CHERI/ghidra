@@ -5,11 +5,13 @@
 
 # SECTION endianness and alignment
 
+# Morello only supports little endian now, big endian support is not tested at all
 @if DATA_ENDIAN == "little"
 define endian=little;
 @else
 define endian=big;
 @endif
+
 define alignment=4;
 
 # Unlike the above, these are preprocessor macros.  Use them with e.g. $(TAG_GRANULE) in SLEIGH statements.
@@ -26,7 +28,7 @@ define register offset=0x0000 size=16 [ pcc     csp ];
 define register offset=0x0000 size=8  [ pc _    sp _ ];
 define register offset=0x0000 size=4  [ _ _ _ _ wsp _ _ _ ];
 
-define register offset=0x0100 size=1 [ NG ZR CY OV shift_carry tmpCY tmpOV tmpNG tmpZR ];
+define register offset=0x0100 size=1 [ NG ZR CY OV shift_carry C64 tmpCY tmpOV tmpNG tmpZR ];
 
 define register offset=0x0200 size=4 [ glob_mask32 ];
 define register offset=0x0204 size=8 [ glob_mask64 ];
@@ -421,7 +423,7 @@ define register offset=0x3128 size=16 tmp_stCn;
 
 # General purpose registers C0-C30 (C31=zero register CZR)
 # They are accessed as
-#   129-bit register named C0-C30
+#   129-bit register named C0-C30 (1 bit tag)
 #	64-bit register named X0-X30
 #	32-bit registers named W0-W30
 
@@ -771,7 +773,7 @@ define context contextreg
 	PAC_clobber = (22,22) noflow
 	ShowBTI = (23,23) noflow
 	ShowMemTag = (24,24) noflow
-	C64 = (25,25)
+	ShowC64 = (25,25) noflow
 ;
 
 define token instrAARCH64 (32) endian = little
@@ -1948,12 +1950,9 @@ Addr19: AddrLoc19 is AddrLoc19 { export *:8 AddrLoc19; }
 
 Addr26: AddrLoc26 is AddrLoc26 { export *:8 AddrLoc26; }
 
-AdrReloff: reloff is b_31=1 & immlo & immhi [ reloff = ((inst_start) & ~0xfff) + ( ((immhi << 2) | immlo) << 12 ); ] { export *[const]:8 reloff; }
-AdrReloff: reloff is b_31=0 & immlo & immhi [ reloff = (inst_start) + ( ((immhi << 2) | immlo) ); ] { export *[const]:8 reloff; }
-
-CAdrReloff: reloff is b_31=1 & b_23=0 & immlo & morello.immhi [ reloff = ((inst_start) & ~0xfff) + (( ((morello.immhi << 2) | immlo) << 12 ) & 0xffffffffffffffff); ] { export *[const]:8 reloff; }
-CAdrReloff: reloff is b_31=1 & b_23=1 & immlo & morello.immhi [ reloff = ((inst_start) & ~0xfff) + (( ((morello.immhi << 2) | immlo) << 12 )); ] { export *[const]:8 reloff; }
-CAdrReloff: reloff is b_31=0 & b_23=1 & immlo & morello.immhi [ reloff = (inst_start) + ( ((morello.immhi << 2) | immlo) ); ] { export *[const]:8 reloff; }
+AdrReloff: reloff is b_31=1 & b_23=0 & immlo & morello.immhi [ reloff = ((inst_start) & ~0xfff) + (( ((morello.immhi << 2) | immlo) << 12 ) & 0xffffffffffffffff); ] { export *[const]:8 reloff; }
+AdrReloff: reloff is b_31=1 & b_23=1 & immlo & morello.immhi [ reloff = ((inst_start) & ~0xfff) + (( ((morello.immhi << 2) | immlo) << 12 )); ] { export *[const]:8 reloff; }
+AdrReloff: reloff is b_31=0 & b_23=1 & immlo & morello.immhi [ reloff = (inst_start) + ( ((morello.immhi << 2) | immlo) ); ] { export *[const]:8 reloff; }
 
 ImmShift32: "#"^imm12 is aa_extreg_shift=0 & imm12 { export *[const]:4 imm12; }
 ImmShift32: "#"^imm12, "LSL #12" is aa_extreg_shift=1 & imm12 { tmp:4 = imm12 << 12; export tmp; }
@@ -2059,6 +2058,7 @@ ExtendRegShift64: ExtendReg64 is Rm_GPR64 & aa_extreg_shift = 0 & aa_extreg_opti
 ExtendRegShift64: ExtendReg64 is Rm_GPR64 & aa_extreg_shift = 0 & aa_extreg_option=7 & aa_extreg_imm3=0 & ExtendReg64 & RegShiftVal64 { export Rm_GPR64; }
 ExtendRegShift64: ExtendReg64 is Rm_GPR64 & toplevel.op0=0b110 & toplevel=0x2 & b_2123=0b101 & aa_extreg_imm3=0 & ExtendReg64 & RegShiftVal64 { export Rm_GPR64; }
 
+
 ExtendReg129: Rm_GPR32, "UXTW " is Rm_GPR32 & b_13=0 & b_15=0 & b_12=1 { tmp:8 = zext(Rm_GPR32); export tmp; }
 ExtendReg129: Rm_GPR32, "SXTW " is Rm_GPR32 & b_13=0 & b_15=1 & b_12=1 { tmp:8 = sext(Rm_GPR32); export tmp; }
 ExtendReg129: Rm_GPR64, "LSL " is Rm_GPR64 & b_13=1 & b_15=0 & b_12=1 { tmp:8 = Rm_GPR64; export tmp; }
@@ -2066,99 +2066,85 @@ ExtendReg129: Rm_GPR64, "SXTX " is Rm_GPR64 & b_13=1 & b_15=1 & b_12=1 { tmp:8 =
 ExtendReg129: Rm_GPR32 is Rm_GPR32 & b_13=0 & b_12=0 { tmp:8 = zext(Rm_GPR32); export tmp; }
 ExtendReg129: Rm_GPR64 is Rm_GPR64 & b_13=1 & b_12=0 { tmp:8 = Rm_GPR64; export tmp; }
 
-ExtendRegShift129: ExtendReg129
-is ExtendReg129 & b_12=0
-{
-	build ExtendReg129;
-	export ExtendReg129;
-}
-ExtendRegShift129: ExtendReg129^"#4"
-is ExtendReg129 & b_12=1
-{
-	build ExtendReg129;
-	tmp:8 = ExtendReg129;
-	tmp = tmp << 4;
-	export tmp;
-}
-
 UnscPriv: "u" is b_1011=0 { }
 UnscPriv: "t" is b_1011=2 { }
 
 # Simple register load or store
-addrReg: "["^Rn_GPR64xsp^"]" is Rn_GPR64xsp { export Rn_GPR64xsp; }
-CAddrReg: "["^Rn_GPR129csp^"]" is Rn_GPR129csp { export Rn_GPR129csp; } # TODO: this is depending on PSTATE.C64
+addrReg: "["^Rn_GPR129csp^"]" is Rn_GPR64xsp & Rn_GPR129csp { export Rn_GPR64xsp; }
+CAddrReg: "["^Rn_GPR129csp^"]" is Rn_GPR129csp { export Rn_GPR129csp; }
+# TODO: alternate base instructions
 
 # Scaled Offset
-addrUIMM: "["^Rn_GPR64xsp, "#"^pimm^"]" is size.ldstr=0 & b_2729=7 & v & b_2425=1 & b_2323 & Rn_GPR64xsp & imm12 [ pimm = imm12 << 0; ] { tmp:8 = Rn_GPR64xsp + pimm; export tmp; }
-addrUIMM: "["^Rn_GPR64xsp, "#"^pimm^"]" is size.ldstr=1 & b_2729=7 & v & b_2425=1 & b_2323 & Rn_GPR64xsp & imm12 [ pimm = imm12 << 1; ] { tmp:8 = Rn_GPR64xsp + pimm; export tmp; }
-addrUIMM: "["^Rn_GPR64xsp, "#"^pimm^"]" is size.ldstr=2 & b_2729=7 & v & b_2425=1 & b_2323 & Rn_GPR64xsp & imm12 [ pimm = imm12 << 2; ] { tmp:8 = Rn_GPR64xsp + pimm; export tmp; }
-addrUIMM: "["^Rn_GPR64xsp, "#"^pimm^"]" is size.ldstr=3 & b_2729=7 & v & b_2425=1 & b_2323 & Rn_GPR64xsp & imm12 [ pimm = imm12 << 3; ] { tmp:8 = Rn_GPR64xsp + pimm; export tmp; }
+addrUIMM: "["^Rn_GPR129csp, "#"^pimm^"]" is size.ldstr=0 & b_2729=7 & v & b_2425=1 & b_2323 & Rn_GPR64xsp & imm12 & Rn_GPR129csp [ pimm = imm12 << 0; ] { tmp:8 = Rn_GPR64xsp + pimm; export tmp; }
+addrUIMM: "["^Rn_GPR129csp, "#"^pimm^"]" is size.ldstr=1 & b_2729=7 & v & b_2425=1 & b_2323 & Rn_GPR64xsp & imm12 & Rn_GPR129csp [ pimm = imm12 << 1; ] { tmp:8 = Rn_GPR64xsp + pimm; export tmp; }
+addrUIMM: "["^Rn_GPR129csp, "#"^pimm^"]" is size.ldstr=2 & b_2729=7 & v & b_2425=1 & b_2323 & Rn_GPR64xsp & imm12 & Rn_GPR129csp [ pimm = imm12 << 2; ] { tmp:8 = Rn_GPR64xsp + pimm; export tmp; }
+addrUIMM: "["^Rn_GPR129csp, "#"^pimm^"]" is size.ldstr=3 & b_2729=7 & v & b_2425=1 & b_2323 & Rn_GPR64xsp & imm12 & Rn_GPR129csp [ pimm = imm12 << 3; ] { tmp:8 = Rn_GPR64xsp + pimm; export tmp; }
 
-addrUIMM: "["^Rn_GPR64xsp, "#"^pimm^"]" is size.ldstr=0 & b_2729=7 & v=1 & b_2425=1 & b_2323=1 & Rn_GPR64xsp & imm12 [ pimm = imm12 << 4; ] { tmp:8 = Rn_GPR64xsp + pimm; export tmp; }
-addrUIMM: "["^Rn_GPR64xsp^"]" is size.ldstr=0 & b_2729=7 & v & b_2425=1 & b_2323 & Rn_GPR64xsp & imm12=0 { tmp:8 = Rn_GPR64xsp; export tmp; }
-addrUIMM: "["^Rn_GPR64xsp^"]" is size.ldstr=1 & b_2729=7 & v & b_2425=1 & b_2323 & Rn_GPR64xsp & imm12=0 { tmp:8 = Rn_GPR64xsp; export tmp; }
-addrUIMM: "["^Rn_GPR64xsp^"]" is size.ldstr=2 & b_2729=7 & v & b_2425=1 & b_2323 & Rn_GPR64xsp & imm12=0 { tmp:8 = Rn_GPR64xsp; export tmp; }
-addrUIMM: "["^Rn_GPR64xsp^"]" is size.ldstr=3 & b_2729=7 & v & b_2425=1 & b_2323 & Rn_GPR64xsp & imm12=0 { tmp:8 = Rn_GPR64xsp; export tmp; }
-addrUIMM: "["^Rn_GPR64xsp^"]" is size.ldstr=0 & b_2729=7 & v=1 & b_2425=1 & b_2323=1 & Rn_GPR64xsp & imm12=0 { tmp:8 = Rn_GPR64xsp; export tmp; }
+addrUIMM: "["^Rn_GPR129csp, "#"^pimm^"]" is size.ldstr=0 & b_2729=7 & v=1 & b_2425=1 & b_2323=1 & Rn_GPR64xsp & imm12 & Rn_GPR129csp [ pimm = imm12 << 4; ] { tmp:8 = Rn_GPR64xsp + pimm; export tmp; }
+addrUIMM: "["^Rn_GPR129csp^"]" is size.ldstr=0 & b_2729=7 & v & b_2425=1 & b_2323 & Rn_GPR64xsp & imm12=0 & Rn_GPR129csp { tmp:8 = Rn_GPR64xsp; export tmp; }
+addrUIMM: "["^Rn_GPR129csp^"]" is size.ldstr=1 & b_2729=7 & v & b_2425=1 & b_2323 & Rn_GPR64xsp & imm12=0 & Rn_GPR129csp { tmp:8 = Rn_GPR64xsp; export tmp; }
+addrUIMM: "["^Rn_GPR129csp^"]" is size.ldstr=2 & b_2729=7 & v & b_2425=1 & b_2323 & Rn_GPR64xsp & imm12=0 & Rn_GPR129csp { tmp:8 = Rn_GPR64xsp; export tmp; }
+addrUIMM: "["^Rn_GPR129csp^"]" is size.ldstr=3 & b_2729=7 & v & b_2425=1 & b_2323 & Rn_GPR64xsp & imm12=0 & Rn_GPR129csp { tmp:8 = Rn_GPR64xsp; export tmp; }
+addrUIMM: "["^Rn_GPR129csp^"]" is size.ldstr=0 & b_2729=7 & v=1 & b_2425=1 & b_2323=1 & Rn_GPR64xsp & imm12=0 & Rn_GPR129csp { tmp:8 = Rn_GPR64xsp; export tmp; }
 
 
 # Scaled offset, normal base
 CAddrUIMM: "["^Rn_GPR129csp, "#"^pimm^"]"
-is b_2428=0b10 & b_2931=0b110 & b_23=0 & Rn_GPR129csp & imm12
+is b_2428=0b10 & b_2931=0b110 & b_23=0 & Rn_GPR129csp & imm12 & Rn_GPR64xsp
 [ pimm = imm12 << 4; ]
 {
-	# TODO
-	export *[const]:8 Rn_GPR129csp;
+	addr:8 = Rn_GPR64xsp + pimm;
+	export addr;
 }
 CAddrUIMM: "["^Rn_GPR129csp^"]"
-is b_2428=0b10 & b_2931=0b110 & b_23=0 & Rn_GPR129csp & imm12=0
+is b_2428=0b10 & b_2931=0b110 & b_23=0 & Rn_GPR129csp & imm12=0 & Rn_GPR64xsp
 {
-	# TODO
-	export *[const]:8 Rn_GPR129csp;
+	addr:8 = Rn_GPR64xsp;
+	export addr;
 }
 
 # Scaled offset, alternate base
 CAddrUIMM: "["^Rn_GPR129csp, "#"^pimm^"]"
-is b_2428=0b10 & b_2931=0b100 & b_23=0 & b_1011=1 & Rn_GPR129csp & imm9
+is b_2428=0b10 & b_2931=0b100 & b_23=0 & b_1011=1 & Rn_GPR129csp & imm9 & Rn_GPR64xsp
 [ pimm = imm9 * 1; ]
 {
-	# TODO
-	export *[const]:8 Rn_GPR129csp;
+	addr:8 = Rn_GPR64xsp + pimm;
+	export addr;
 }
 CAddrUIMM: "["^Rn_GPR129csp, "#"^pimm^"]"
-is b_2428=0b10 & b_2931=0b100 & b_23=0 & b_1011=2 & Rn_GPR129csp & imm9
+is b_2428=0b10 & b_2931=0b100 & b_23=0 & b_1011=2 & Rn_GPR129csp & imm9 & Rn_GPR64xsp
 [ pimm = imm9 << 2; ]
 {
-	# TODO
-	export *[const]:8 Rn_GPR129csp;
+	addr:8 = Rn_GPR64xsp + pimm;
+	export addr;
 }
 CAddrUIMM: "["^Rn_GPR129csp, "#"^pimm^"]"
-is b_2428=0b10 & b_2931=0b100 & b_23=0 & b_1011=3 & Rn_GPR129csp & imm9
+is b_2428=0b10 & b_2931=0b100 & b_23=0 & b_1011=3 & Rn_GPR129csp & imm9 & Rn_GPR64xsp
 [ pimm = imm9 << 3; ]
 {
-	# TODO
-	export *[const]:8 Rn_GPR129csp;
+	addr:8 = Rn_GPR64xsp + pimm;
+	export addr;
 }
 CAddrUIMM: "["^Rn_GPR129csp, "#"^pimm^"]"
-is b_2428=0b10 & b_2931=0b100 & b_23=0 & b_1011=0 & Rn_GPR129csp & imm9
+is b_2428=0b10 & b_2931=0b100 & b_23=0 & b_1011=0 & Rn_GPR129csp & imm9 & Rn_GPR64xsp
 [ pimm = imm9 << 4; ]
 {
-	# TODO
-	export *[const]:8 Rn_GPR129csp;
+	addr:8 = Rn_GPR64xsp + pimm;
+	export addr;
 }
 CAddrUIMM: "["^Rn_GPR129csp^"]"
-is b_2428=0b10 & b_2931=0b100 & b_23=0 & Rn_GPR129csp & imm9=0
+is b_2428=0b10 & b_2931=0b100 & b_23=0 & Rn_GPR129csp & imm9=0 & Rn_GPR64xsp
 {
-	# TODO
-	export *[const]:8 Rn_GPR129csp;
+	addr:8 = Rn_GPR64xsp;
+	export addr;
 }
 
 # Address Reg + signed offset -256 to 255
-addr_SIMM9: "["^Rn_GPR64xsp, "#"^simm9^"]" is Rn_GPR64xsp & simm9 { tmp:8 = Rn_GPR64xsp + simm9; export tmp; }
-addr_SIMM9: "["^Rn_GPR64xsp^"]" is Rn_GPR64xsp & simm9=0 { tmp:8 = Rn_GPR64xsp; export tmp; }
+addr_SIMM9: "["^Rn_GPR129csp, "#"^simm9^"]" is Rn_GPR64xsp & simm9 & Rn_GPR129csp { tmp:8 = Rn_GPR64xsp + simm9; export tmp; }
+addr_SIMM9: "["^Rn_GPR129csp^"]" is Rn_GPR64xsp & simm9=0 & Rn_GPR129csp { tmp:8 = Rn_GPR64xsp; export tmp; }
 
-CAddr_SIMM9: "["^Rn_GPR129csp, "#"^simm9^"]" is Rn_GPR129csp & simm9 {}
-CAddr_SIMM9: "["^Rn_GPR129csp^"]" is Rn_GPR129csp & simm9=0 {}
+CAddr_SIMM9: "["^Rn_GPR129csp, "#"^simm9^"]" is Rn_GPR129csp & simm9 & Rn_GPR64xsp { tmp:8 = Rn_GPR64xsp + simm9; export tmp; }
+CAddr_SIMM9: "["^Rn_GPR129csp^"]" is Rn_GPR129csp & simm9=0 & Rn_GPR64xsp { tmp:8 = Rn_GPR64xsp; export tmp; }
 
 addrRegShift64: "#"^val is size.ldstr=0 & v=0 & opt & b_1212=1 [ val = 0 & 0xff; ] { export *[const]:8 val; }
 addrRegShift64: "" is size.ldstr=0 & v=0 & opt & b_1212=0 { export 0:8; }
@@ -2220,8 +2206,8 @@ addrIndexed: addr_SIMM9 is size.ldstr & b_2729=7 & b_2425=0 & b_2121=0 & opc.ind
 addrIndexed: addr_SIMM9 is size.ldstr & b_2729=7 & b_2425=0 & b_2121=0 & opc.indexmode=2 & addr_SIMM9 { export addr_SIMM9; }
 
 # post indexed wback
-addrIndexed: "["^Rn_GPR64xsp^"]", "#"^simm9
-is size.ldstr & b_2729=7 & b_2425=0 & b_2121=0 & Rn_GPR64xsp & simm9 & opc.indexmode=1
+addrIndexed: "["^Rn_GPR129csp^"]", "#"^simm9
+is size.ldstr & b_2729=7 & b_2425=0 & b_2121=0 & Rn_GPR64xsp & simm9 & opc.indexmode=1 & Rn_GPR129csp
 {
 	tmp:8 = Rn_GPR64xsp;
 	Rn_GPR64xsp = Rn_GPR64xsp + simm9;
@@ -2229,65 +2215,78 @@ is size.ldstr & b_2729=7 & b_2425=0 & b_2121=0 & Rn_GPR64xsp & simm9 & opc.index
 }
 
 # Register, Register offset extended
-addrIndexed: "["^Rn_GPR64xsp, addrExtendRegShift64^"]"
-is size.ldstr & b_2729=7 & b_2425=0 & b_2121=1 & Rn_GPR64xsp & opc.indexmode=2 & addrExtendRegShift64
+addrIndexed: "["^Rn_GPR129csp, addrExtendRegShift64^"]"
+is size.ldstr & b_2729=7 & b_2425=0 & b_2121=1 & Rn_GPR64xsp & opc.indexmode=2 & addrExtendRegShift64 & Rn_GPR129csp
 {
 	tmp:8 = Rn_GPR64xsp + addrExtendRegShift64;
 	export tmp;
 }
 
 # pre indexed wback
-addrIndexed: "["^Rn_GPR64xsp, "#"^simm9^"]!"
-is size.ldstr & b_2729=7 & b_2425=0 & b_2121=0 & Rn_GPR64xsp & simm9 & opc.indexmode=3
+addrIndexed: "["^Rn_GPR129csp, "#"^simm9^"]!"
+is size.ldstr & b_2729=7 & b_2425=0 & b_2121=0 & Rn_GPR64xsp & simm9 & opc.indexmode=3 & Rn_GPR129csp
 {
 	Rn_GPR64xsp = Rn_GPR64xsp + simm9;
 	export Rn_GPR64xsp;
 }
 
-# FIXME: currently Ghidra doesn't support scalars with bit length greater than 64. We need to refactor Ghidra model first. 
 # b_2428 denotes Morello encoding
 CAddrScale: pimm is b_2428=0b10 & simm9 [ pimm = simm9 << 4; ] { export *[const]:8 pimm; }
 
+
 # unsigned offset
-CAddrIndexed: CAddrUIMM is b_2428=0b10 & b_2931=0b110 & b_23=0 & CAddrUIMM
-{}
+CAddrIndexed: CAddrUIMM is b_2428=0b10 & b_2931=0b110 & b_23=0 & CAddrUIMM { export CAddrUIMM; }
 
 # unsigned offset alternate base
-CAddrIndexed: CAddrUIMM is b_2428=0b10 & b_2931=0b100 & b_2223=1 & CAddrUIMM
-{}
+CAddrIndexed: CAddrUIMM is b_2428=0b10 & b_2931=0b100 & b_2223=1 & CAddrUIMM { export CAddrUIMM; }
 
 # unsigned offset unscaled immediate
-CAddrIndexed: CAddr_SIMM9 is b_2428=0b10 & b_2931=0b101 & b_21=0 & b_1011=0 & CAddr_SIMM9
-{}
+CAddrIndexed: CAddr_SIMM9 is b_2428=0b10 & b_2931=0b101 & b_21=0 & b_1011=0 & CAddr_SIMM9 { export CAddr_SIMM9; }
 
 # unsigned offset unscaled immediate, alternate base
-CAddrIndexed: CAddr_SIMM9 is b_2428=0b10 & b_2931=0b111 & CAddr_SIMM9
-{}
+CAddrIndexed: CAddr_SIMM9 is b_2428=0b10 & b_2931=0b111 & CAddr_SIMM9 { export CAddr_SIMM9; }
 
 # register unpriviledged
 CAddrIndexed: "["^Rn_GPR129csp, "#"^CAddrScale^"]"
-is b_2428=0b10 & b_2931=0b101 & b_21=0 & b_1011=2 & Rn_GPR129csp & CAddrScale
-{}
+is b_2428=0b10 & b_2931=0b101 & b_21=0 & b_1011=2 & Rn_GPR129csp & CAddrScale & Rn_GPR64xsp
+{
+	tmp:8 = Rn_GPR64xsp + CAddrScale;
+	export tmp;
+}
 
 # Register, Register offset extended, normal base
 CAddrIndexed: "["^Rn_GPR129csp, addrExtendRegShift129^"]"
-is b_2428=0b10 & b_2931=0b101 & b_21=1 & b_14=1 & b_1011=2 & Rn_GPR129csp & addrExtendRegShift129
-{}
+is b_2428=0b10 & b_2931=0b101 & b_21=1 & b_14=1 & b_1011=2 & Rn_GPR129csp & addrExtendRegShift129 & Rn_GPR64xsp
+{
+	tmp:8 = Rn_GPR64xsp + addrExtendRegShift129;
+	export tmp;
+}
 
 # Register, Register offset extended, alternate base
 CAddrIndexed: "["^Rn_GPR129csp, addrExtendRegShift129^"]"
-is b_2428=0b10 & b_2931=0b100 & b_23=1 & Rn_GPR129csp & addrExtendRegShift129
-{}
+is b_2428=0b10 & b_2931=0b100 & b_23=1 & Rn_GPR129csp & addrExtendRegShift129 & Rn_GPR64xsp
+{
+	tmp:8 = Rn_GPR64xsp + addrExtendRegShift129;
+	export tmp;
+}
 
 # post indexed wback
 CAddrIndexed: "["^Rn_GPR129csp^"]", "#"^CAddrScale
-is b_2428=0b10 & b_21=0 & b_1011=0b01 & Rn_GPR129csp & CAddrScale
-{}
+is b_2428=0b10 & b_21=0 & b_1011=0b01 & Rn_GPR129csp & CAddrScale & Rn_GPR64xsp
+{
+	tmp:8 = Rn_GPR64xsp;
+	Rn_GPR64xsp = Rn_GPR64xsp + CAddrScale;
+	export tmp;
+}
 
 # pre indexed wback
 CAddrIndexed: "["^Rn_GPR129csp, "#"^CAddrScale^"]!"
-is b_2428=0b10 & b_21=0 & b_1011=0b11 & Rn_GPR129csp & CAddrScale
-{}
+is b_2428=0b10 & b_21=0 & b_1011=0b11 & Rn_GPR129csp & CAddrScale & Rn_GPR64xsp
+{
+	Rn_GPR64xsp = Rn_GPR64xsp + CAddrScale;
+	tmp:8 = Rn_GPR64xsp;
+	export tmp;
+}
 
 # For LDRAA/LDRAB
 
@@ -2334,15 +2333,15 @@ addrPairScale: pimm is b_3031=2 & v=1 & simm7 [ pimm = simm7 << 4; ] { export *[
 CAddrPairScale: pimm is b_2428=0b10 & simm7 [ pimm = simm7 << 4; ] { export *[const]:8 pimm; }
 
 # Scaled Offset
-addrPairUIMM: "["^Rn_GPR64xsp, "#"^addrPairScale^"]"
-is sf & Rn_GPR64xsp & addrPairScale & simm7
+addrPairUIMM: "["^Rn_GPR129csp, "#"^addrPairScale^"]"
+is sf & Rn_GPR64xsp & addrPairScale & simm7 & Rn_GPR129csp
 {
 	tmp:8 = Rn_GPR64xsp + addrPairScale;
 	export tmp;
 }
 
-addrPairUIMM: "["^Rn_GPR64xsp^"]"
-is sf & Rn_GPR64xsp & addrPairScale & simm7=0
+addrPairUIMM: "["^Rn_GPR129csp^"]"
+is sf & Rn_GPR64xsp & addrPairScale & simm7=0 & Rn_GPR129csp
 {
 	tmp:8 = Rn_GPR64xsp;
 	export tmp;
@@ -2359,8 +2358,8 @@ is b_2729=0b101 & b_2325=0b000 & addrPairUIMM
 { export addrPairUIMM; }
 
 # post indexed wback
-addrPairIndexed: "["^Rn_GPR64xsp^"]", "#"^addrPairScale
-is b_2729=0b101 & b_2325=0b001 & Rn_GPR64xsp & addrPairScale
+addrPairIndexed: "["^Rn_GPR129csp^"]", "#"^addrPairScale
+is b_2729=0b101 & b_2325=0b001 & Rn_GPR64xsp & addrPairScale & Rn_GPR129csp
 {
 	tmp:8 = Rn_GPR64xsp;
 	Rn_GPR64xsp = Rn_GPR64xsp + addrPairScale;
@@ -2368,8 +2367,8 @@ is b_2729=0b101 & b_2325=0b001 & Rn_GPR64xsp & addrPairScale
 }
 
 # pre indexed wback
-addrPairIndexed: "["^Rn_GPR64xsp, "#"^addrPairScale^"]!"
-is b_2729=0b101 & b_2325=0b011 & Rn_GPR64xsp & addrPairScale
+addrPairIndexed: "["^Rn_GPR129csp, "#"^addrPairScale^"]!"
+is b_2729=0b101 & b_2325=0b011 & Rn_GPR64xsp & addrPairScale & Rn_GPR129csp
 {
 	Rn_GPR64xsp = Rn_GPR64xsp + addrPairScale;
 	export Rn_GPR64xsp;
@@ -3142,7 +3141,6 @@ morello_imm12_addsubimm_operand_i64_negimm_lsl12: morello_immShift64 is morello_
 morello_imm12_addsubimm_operand_i64_posimm_lsl0: morello_immShift64 is morello_immShift64 { export morello_immShift64; }
 morello_imm12_addsubimm_operand_i64_posimm_lsl12: morello_immShift64 is morello_immShift64 { export morello_immShift64; }
 
-
 # SECTION pcodeops
 
 # The following SIMD and MP versions of SLEIGH primitives are
@@ -3327,10 +3325,26 @@ PACIXSP_BTITARGETS: is ShowBTI=0 { }
 
 # TODO
 # CHERI pseudo ops
-define pcodeop CapGetTag;
-define pcodeop CapGetAddress;
-define pcodeop CapSetTag;
-define pcodeop CapSetAddress;
+define pcodeop CapIsTagSet;
+define pcodeop CapGetPermissions;
+define pcodeop CapIsSealed;
+define pcodeop CapGetBounds;
+define pcodeop CapGetBoundsLimit;
+define pcodeop CapGetLength;
+define pcodeop CapGetValue;
+define pcodeop CapGetObjectType;
+define pcodeop CapGetFlags;
+define pcodeop CapGetOffset;
+
+define pcodeop CapWithTagSet;
+define pcodeop CapWithTagClear;
+define pcodeop CapSetObjectType;
+define pcodeop CapClearPerms;
+define pcodeop CapSetBounds;
+define pcodeop CapSetBoundsExact;
+define pcodeop CapSetValue;
+define pcodeop CapSetOffset;
+define pcodeop CapUnseal;
 
 
 # These pseudo ops are used in neon
@@ -3871,6 +3885,11 @@ macro Or2BytesWithExcludedTags(tmp)
 
 # end of memory-tagging macros
 
+# begin CHERI macros
+
+
+# end of CHERI macros
+
 macro addflags(op1, op2)
 {
 	tmpCY = carry(op1, op2);
@@ -4054,10 +4073,11 @@ is ImmS_ImmR_TestSet=0 & ImmR & ImmS & instruction
 with : ImmS_ImmR_TestSet=1 {
 	
 @include "AARCH64_base_PACoptions.sinc"
+# New instructions in Morello
 @include "AARCH64cheri.sinc"
 
+# Modified base instructions in Morello
 @include "AARCH64cheribase.sinc"
-# @include "AARCH64base.sinc"
 @include "AARCH64neon.sinc"
 @include "AARCH64ldst.sinc"
 @include "AARCH64sve.sinc"

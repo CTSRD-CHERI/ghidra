@@ -203,26 +203,26 @@ is sf=1 & op=0 & S & SBIT_CZNO & b_2428=0xb & b_2121=0 & RegShift64 & Rn_GPR64 &
 # CONSTRUCT x10000000/mask=x9f000000 MATCHED 1 DOCUMENTED OPCODES
 # AUNIT --inst x10000000/mask=x9f000000 --status nodest --comment "qemuerr(illegal addresses cause qemu exit)"
 
-:adr Rd_GPR129, CAdrReloff
-is b_31=0 & CAdrReloff & b_2428=0x10 & Rd_GPR129
+:adr Rd_GPR129, AdrReloff
+is b_31=0 & AdrReloff & b_2428=0x10 & Rd_GPR129 & Rd_GPR64
 {
-	Rd_GPR129 = &CAdrReloff;
+	Rd_GPR64 = &AdrReloff;
 }
 
 # C6.2.11 ADRP page C6-1164 line 68943 MATCH x90000000/mask=x9f000000
 # CONSTRUCT x90000000/mask=x9f000000 MATCHED 1 DOCUMENTED OPCODES
 # AUNIT --inst x90000000/mask=x9f000000 --status nodest --comment "qemuerr(illegal addresses cause qemu exit)"
 
-:adrp Rd_GPR129, CAdrReloff
-is b_31=1 & CAdrReloff & b_2428=0x10 & b_23=1 & Rd_GPR129
+:adrp Rd_GPR129, AdrReloff
+is b_31=1 & AdrReloff & b_2428=0x10 & b_23=1 & Rd_GPR129 & Rd_GPR64
 {
-	Rd_GPR129 = &CAdrReloff;
+	Rd_GPR64 = &AdrReloff;
 }
 
-:adrdp Rd_GPR129, CAdrReloff
-is b_31=1 & CAdrReloff & b_2428=0x10 & b_23=0 & Rd_GPR129
+:adrdp Rd_GPR129, AdrReloff
+is b_31=1 & AdrReloff & b_2428=0x10 & b_23=0 & Rd_GPR129 & Rd_GPR64
 {
-	Rd_GPR129 = &CAdrReloff;
+	Rd_GPR64 = &AdrReloff;
 }
 
 # C6.2.12 AND (immediate) page C6-1165 line 68992 MATCH x12000000/mask=x7f800000
@@ -903,7 +903,7 @@ is b_2531=0x6b & b_2324=0 & b_2122=1 & b_1620=0x1f & b_1015=0 & Rn_GPR64 & b_000
 # Z == 0 && M == 0 && Rm = 11111 Key A, zero modifier variant
 
 blinkop: "l" is b_2122=0b01 { x30 = inst_start + 4; call [pc]; }
-blinkop: "" is b_2122=0b00 { goto[pc]; }
+blinkop: "" is b_2122=0b00 { goto [pc]; }
 
 # C6.2.36 BLRAA, BLRAAZ, BLRAB, BLRABZ page C6-1207 line 71095 MATCH xd63f0800/mask=xfefff800
 # C6.2.38 BRAA, BRAAZ, BRAB, BRABZ page C6-1210 line 71251 MATCH xd61f0800/mask=xfefff800
@@ -999,8 +999,8 @@ cas_var: "l" is b_22=0 & b_15=1 { }
 
 # CAS{,A,AL,L}B size=0b10 (b_3031)
 
-:cas^cas_var^"b" aa_Ws, aa_Wt, [Rn_GPR64xsp]
-is b_3031=0b00 & b_2329=0b0010001 & b_21=1 & b_1014=0b11111 & cas_var & aa_Wt & Rn_GPR64xsp & aa_Ws
+:cas^cas_var^"b" aa_Ws, aa_Wt, [Rn_GPR129csp]
+is b_3031=0b00 & b_2329=0b0010001 & b_21=1 & b_1014=0b11111 & cas_var & aa_Wt & Rn_GPR129csp & Rn_GPR64xsp & aa_Ws
 {
 	comparevalue:1 = aa_Ws:1;
 	newvalue:1 = aa_Wt:1;
@@ -1017,8 +1017,8 @@ is b_3031=0b00 & b_2329=0b0010001 & b_21=1 & b_1014=0b11111 & cas_var & aa_Wt & 
 
 # CAS{,A,AL,L}H size=0b10 (b_3031)
 
-:cas^cas_var^"h" aa_Ws, aa_Wt, [Rn_GPR64xsp]
-is b_3031=0b01 & b_2329=0b0010001 & b_21=1 & b_1014=0b11111 & cas_var & aa_Wt & Rn_GPR64xsp & aa_Ws
+:cas^cas_var^"h" aa_Ws, aa_Wt, [Rn_GPR129csp]
+is b_3031=0b01 & b_2329=0b0010001 & b_21=1 & b_1014=0b11111 & cas_var & aa_Wt & Rn_GPR129csp & Rn_GPR64xsp & aa_Ws
 {
 	comparevalue:2 = aa_Ws:2;
 	newvalue:2 = aa_Wt:2;
@@ -1035,8 +1035,8 @@ is b_3031=0b01 & b_2329=0b0010001 & b_21=1 & b_1014=0b11111 & cas_var & aa_Wt & 
 
 # CASP{,A,AL,L} size=0b00 (b_3031)
 
-:casp^cas_var aa_Ws, aa_Wss, aa_Wt, aa_Wtt, [Rn_GPR64xsp]
-is b_3031=0b00 & b_2329=0b0010000 & b_21=1 & b_1014=0b11111 & b_16=0 & b_00=0 & cas_var & aa_Ws & aa_Wss & aa_Wt & aa_Wtt & Rn_GPR64xsp
+:casp^cas_var aa_Ws, aa_Wss, aa_Wt, aa_Wtt, [Rn_GPR129csp]
+is b_3031=0b00 & b_2329=0b0010000 & b_21=1 & b_1014=0b11111 & b_16=0 & b_00=0 & cas_var & aa_Ws & aa_Wss & aa_Wt & aa_Wtt & Rn_GPR129csp & Rn_GPR64xsp
 {
 @if DATA_ENDIAN == "big"
 	comparevalue:8 = (zext(aa_Ws) << 32) | zext(aa_Wss);
@@ -1064,8 +1064,8 @@ is b_3031=0b00 & b_2329=0b0010000 & b_21=1 & b_1014=0b11111 & b_16=0 & b_00=0 & 
 
 # CASP{,A,AL,L} size=0b01 (b_3031)
 
-:casp^cas_var aa_Xs, aa_Xss, aa_Xt, aa_Xtt, [Rn_GPR64xsp]
-is b_3031=0b01 & b_2329=0b0010000 & b_21=1 & b_1014=0b11111 & b_16=0 & b_00=0 & cas_var & aa_Xs & aa_Xss & aa_Xt & aa_Xtt & Rn_GPR64xsp
+:casp^cas_var aa_Xs, aa_Xss, aa_Xt, aa_Xtt, [Rn_GPR129csp]
+is b_3031=0b01 & b_2329=0b0010000 & b_21=1 & b_1014=0b11111 & b_16=0 & b_00=0 & cas_var & aa_Xs & aa_Xss & aa_Xt & aa_Xtt & Rn_GPR129csp & Rn_GPR64xsp
 {
 	local tmp_s:8 = aa_Xs;
 	local tmp_ss:8 = aa_Xss;
@@ -1102,8 +1102,8 @@ is b_3031=0b01 & b_2329=0b0010000 & b_21=1 & b_1014=0b11111 & b_16=0 & b_00=0 & 
 # AUNIT --inst x88a07c00/mask=xffa07c00 --status nomem
 # CAS{,A,AL,L} size=0b10 (b_3031)
 
-:cas^cas_var aa_Ws, aa_Wt, [Rn_GPR64xsp]
-is b_3031=0b10 & b_2329=0b0010001 & b_21=1 & b_1014=0b11111 & cas_var & aa_Wt & Rn_GPR64xsp & aa_Ws
+:cas^cas_var aa_Ws, aa_Wt, [Rn_GPR129csp]
+is b_3031=0b10 & b_2329=0b0010001 & b_21=1 & b_1014=0b11111 & cas_var & aa_Wt & Rn_GPR64xsp & aa_Ws & Rn_GPR129csp
 {
 	comparevalue:4 = aa_Ws;
 	newvalue:4 = aa_Wt;
@@ -1120,8 +1120,8 @@ is b_3031=0b10 & b_2329=0b0010001 & b_21=1 & b_1014=0b11111 & cas_var & aa_Wt & 
 
 # CAS{,A,AL,L} size=0b11 (b_3031)
 
-:cas^cas_var aa_Xs, aa_Xt, [Rn_GPR64xsp]
-is b_3031=0b11 & b_2329=0b0010001 & b_21=1 & b_1014=0b11111 & cas_var & aa_Xt & Rn_GPR64xsp & aa_Xs
+:cas^cas_var aa_Xs, aa_Xt, [Rn_GPR129csp]
+is b_3031=0b11 & b_2329=0b0010001 & b_21=1 & b_1014=0b11111 & cas_var & aa_Xt & Rn_GPR64xsp & aa_Xs & Rn_GPR129csp
 {
 	comparevalue:8 = aa_Xs;
 	newvalue:8 = aa_Xt;
@@ -2653,8 +2653,8 @@ ls_opc8: "umin" is b_3031=0b11 & b_1215=0b0111 & aa_Xs & ls_data8 & ls_mem8 { bu
 
 # size=0b00 (3031)
 
-:ld^ls_opc1^ls_lor^"b" aa_Ws, aa_Wt, [Rn_GPR64xsp]
-is b_3031=0b00 & b_2429=0b111000 & b_21=1 & b_1515=0 & b_1011=0b00 & ls_opc1 & ls_loa & ls_lor & aa_Wt & aa_Ws & Rn_GPR64xsp
+:ld^ls_opc1^ls_lor^"b" aa_Ws, aa_Wt, [Rn_GPR129csp]
+is b_3031=0b00 & b_2429=0b111000 & b_21=1 & b_1515=0 & b_1011=0b00 & ls_opc1 & ls_loa & ls_lor & aa_Wt & aa_Ws & Rn_GPR129csp & Rn_GPR64xsp
 { build ls_loa; build ls_opc1; aa_Wt = tmp_ldWn; build ls_lor; }
 
 # C6.2.134 LDADDH, LDADDAH, LDADDALH, LDADDLH page C6-1491 line 88670 MATCH x78200000/mask=xff20fc00
@@ -2670,8 +2670,8 @@ is b_3031=0b00 & b_2429=0b111000 & b_21=1 & b_1515=0 & b_1011=0b00 & ls_opc1 & l
 
 # size=0b01 (3031)
 
-:ld^ls_opc2^ls_lor^"h" aa_Ws, aa_Wt, [Rn_GPR64xsp]
-is b_3031=0b01 & b_2429=0b111000 & b_21=1 & b_1515=0 & b_1011=0b00 & ls_opc2 & ls_loa & ls_lor & aa_Wt & aa_Ws & Rn_GPR64xsp
+:ld^ls_opc2^ls_lor^"h" aa_Ws, aa_Wt, [Rn_GPR129csp]
+is b_3031=0b01 & b_2429=0b111000 & b_21=1 & b_1515=0 & b_1011=0b00 & ls_opc2 & ls_loa & ls_lor & aa_Wt & aa_Ws & Rn_GPR64xsp & Rn_GPR129csp
 { build ls_loa; build ls_opc2; aa_Wt = tmp_ldWn; build ls_lor; }
 
 # C6.2.135 LDADD, LDADDA, LDADDAL, LDADDL page C6-1493 line 88796 MATCH xb8200000/mask=xbf20fc00
@@ -2695,8 +2695,8 @@ is b_3031=0b01 & b_2429=0b111000 & b_21=1 & b_1515=0 & b_1011=0b00 & ls_opc2 & l
 
 # size=0b10 (3031)
 
-:ld^ls_opc4^ls_lor aa_Ws, aa_Wt, [Rn_GPR64xsp]
-is b_3031=0b10 & b_2429=0b111000 & b_21=1 & b_1515=0 & b_1011=0b00 & ls_opc4 & ls_loa & ls_lor & aa_Wt & aa_Ws & Rn_GPR64xsp
+:ld^ls_opc4^ls_lor aa_Ws, aa_Wt, [Rn_GPR129csp]
+is b_3031=0b10 & b_2429=0b111000 & b_21=1 & b_1515=0 & b_1011=0b00 & ls_opc4 & ls_loa & ls_lor & aa_Wt & aa_Ws & Rn_GPR64xsp & Rn_GPR129csp
 { build ls_loa; build ls_opc4; aa_Wt = tmp_ldWn; build ls_lor; }
 
 # C6.2.135 LDADD, LDADDA, LDADDAL, LDADDL page C6-1493 line 88796 MATCH xb8200000/mask=xbf20fc00
@@ -2720,8 +2720,8 @@ is b_3031=0b10 & b_2429=0b111000 & b_21=1 & b_1515=0 & b_1011=0b00 & ls_opc4 & l
 
 # size=0b11 (3031)
 
-:ld^ls_opc8^ls_lor aa_Xs, aa_Xt, [Rn_GPR64xsp]
-is b_3031=0b11 & b_2429=0b111000 & b_21=1 & b_1515=0 & b_1011=0b00 & ls_opc8 & ls_loa & ls_lor & aa_Xt & aa_Xs & Rn_GPR64xsp
+:ld^ls_opc8^ls_lor aa_Xs, aa_Xt, [Rn_GPR129csp]
+is b_3031=0b11 & b_2429=0b111000 & b_21=1 & b_1515=0 & b_1011=0b00 & ls_opc8 & ls_loa & ls_lor & aa_Xt & aa_Xs & Rn_GPR64xsp & Rn_GPR129csp
 { build ls_loa; build ls_opc8; aa_Xt = tmp_ldXn; build ls_lor; }
 
 # C6.2.136 LDAPR page C6-1496 line 88965 MATCH xb8a0c000/mask=xbfe0fc00
@@ -2731,8 +2731,8 @@ is b_3031=0b11 & b_2429=0b111000 & b_21=1 & b_1515=0 & b_1011=0b00 & ls_opc8 & l
 # To enforce SHOULD BE ONE fields add: b_1620=0b11111
 # size == 10 32-bit variant
 
-:ldapr aa_Wt, [Rn_GPR64xsp]
-is b_3031=0b10 & b_2129=0b111000101 & b_1015=0b110000 & Rn_GPR64xsp & aa_Wt & ls_data4
+:ldapr aa_Wt, [Rn_GPR129csp]
+is b_3031=0b10 & b_2129=0b111000101 & b_1015=0b110000 & Rn_GPR64xsp & aa_Wt & ls_data4 & Rn_GPR129csp
 {
 	aa_Wt = tmp_ldWn;
 }
@@ -2744,8 +2744,8 @@ is b_3031=0b10 & b_2129=0b111000101 & b_1015=0b110000 & Rn_GPR64xsp & aa_Wt & ls
 # To enforce SHOULD BE ONE fields add: b_1620=0b11111
 # size == 11 64-bit variant
 
-:ldapr aa_Xt, [Rn_GPR64xsp]
-is b_3031=0b11 & b_2129=0b111000101 & b_1015=0b110000 & Rn_GPR64xsp & aa_Xt
+:ldapr aa_Xt, [Rn_GPR129csp]
+is b_3031=0b11 & b_2129=0b111000101 & b_1015=0b110000 & Rn_GPR64xsp & aa_Xt & Rn_GPR129csp
 {
 	aa_Xt = tmp_ldXn;
 }
@@ -2756,8 +2756,8 @@ is b_3031=0b11 & b_2129=0b111000101 & b_1015=0b110000 & Rn_GPR64xsp & aa_Xt
 # To enforce SHOULD BE ONE fields add: b_1620=0b11111
 # TODO unsure of load/release semantics for this instruction
 
-:ldaprb aa_Wt, [Rn_GPR64xsp]
-is b_3031=0b00 & b_2129=0b111000101 & b_1015=0b110000 & Rn_GPR64xsp & aa_Wt & ls_data1
+:ldaprb aa_Wt, [Rn_GPR129csp]
+is b_3031=0b00 & b_2129=0b111000101 & b_1015=0b110000 & Rn_GPR64xsp & aa_Wt & ls_data1 & Rn_GPR129csp
 {
 	aa_Wt = tmp_ldWn;
 }
@@ -2767,8 +2767,8 @@ is b_3031=0b00 & b_2129=0b111000101 & b_1015=0b110000 & Rn_GPR64xsp & aa_Wt & ls
 # AUNIT --inst x78a0c000/mask=xffe0fc00 --status nomem
 # To enforce SHOULD BE ONE fields add: b_1620=0b11111
 
-:ldaprh aa_Wt, [Rn_GPR64xsp]
-is b_3031=0b01 & b_2129=0b111000101 & b_1015=0b110000 & Rn_GPR64xsp & aa_Wt & ls_data2
+:ldaprh aa_Wt, [Rn_GPR129csp]
+is b_3031=0b01 & b_2129=0b111000101 & b_1015=0b110000 & Rn_GPR64xsp & aa_Wt & ls_data2 & Rn_GPR129csp
 {
 	aa_Wt = tmp_ldWn;
 }
@@ -2888,7 +2888,7 @@ is size.ldstr=3 & b_2429=0x8 & b_23=1 & L=1 & b_21=0 & b_15=1 & addrReg & Rt_GPR
 :ldar Rt_GPR32, addrReg
 is size.ldstr=2 & b_2429=0x8 & b_23=1 & L=1 & b_21=0 & b_1620=0b11111 & b_15=1 & b_1014=0b11111 & addrReg & Rt_GPR32 & Rt_GPR64
 {
-	Rt_GPR64 = *addrReg;
+	Rt_GPR64 = zext(*:4 addrReg);
 }
 
 # C6.2.146 LDARB page C6-1516 line 89986 MATCH x08c08000/mask=xffe08000
@@ -2989,8 +2989,8 @@ is size.ldstr=1 & b_2429=0x8 & b_23=0 & L=1 & b_21=0 & b_15=1 & addrReg & Rt_GPR
 # To enforce SHOULD BE ONE fields add: b_1620=0b11111 & b_1014=0b11111
 # size=0b00 (3031)
 
-:ldlarb aa_Wt, [Rn_GPR64xsp]
-is b_3031=0b00 & b_2329=0b0010001 & b_22=1 & b_21=0 & b_15=0 & aa_Wt & Rn_GPR64xsp
+:ldlarb aa_Wt, [Rn_GPR129csp]
+is b_3031=0b00 & b_2329=0b0010001 & b_22=1 & b_21=0 & b_15=0 & aa_Wt & Rn_GPR64xsp & Rn_GPR129csp
 { LOAcquire(); aa_Wt = zext(*:1 Rn_GPR64xsp); }
 
 # C6.2.161 LDLARH page C6-1541 line 91541 MATCH x48c00000/mask=xffe08000
@@ -2999,8 +2999,8 @@ is b_3031=0b00 & b_2329=0b0010001 & b_22=1 & b_21=0 & b_15=0 & aa_Wt & Rn_GPR64x
 # To enforce SHOULD BE ONE fields add: b_1620=0b11111 & b_1014=0b11111
 # size=0b01 (3031)
 
-:ldlarh aa_Wt, [Rn_GPR64xsp]
-is b_3031=0b01 & b_2329=0b0010001 & b_22=1 & b_21=0 & b_15=0 & aa_Wt & Rn_GPR64xsp
+:ldlarh aa_Wt, [Rn_GPR129csp]
+is b_3031=0b01 & b_2329=0b0010001 & b_22=1 & b_21=0 & b_15=0 & aa_Wt & Rn_GPR64xsp & Rn_GPR129csp
 { LOAcquire(); aa_Wt = zext(*:2 Rn_GPR64xsp); }
 
 # C6.2.162 LDLAR page C6-1542 line 91610 MATCH x88c00000/mask=xbfe08000
@@ -3009,8 +3009,8 @@ is b_3031=0b01 & b_2329=0b0010001 & b_22=1 & b_21=0 & b_15=0 & aa_Wt & Rn_GPR64x
 # To enforce SHOULD BE ONE fields add: b_1620=0b11111 & b_1014=0b11111
 # size=0b10 (3031)
 
-:ldlar aa_Wt, [Rn_GPR64xsp]
-is b_3031=0b10 & b_2329=0b0010001 & b_22=1 & b_21=0 & b_15=0 & aa_Wt & Rn_GPR64xsp
+:ldlar aa_Wt, [Rn_GPR129csp]
+is b_3031=0b10 & b_2329=0b0010001 & b_22=1 & b_21=0 & b_15=0 & aa_Wt & Rn_GPR64xsp & Rn_GPR129csp
 { LOAcquire(); aa_Wt = *:4 Rn_GPR64xsp; }
 
 # C6.2.162 LDLAR page C6-1542 line 91610 MATCH x88c00000/mask=xbfe08000
@@ -3018,8 +3018,8 @@ is b_3031=0b10 & b_2329=0b0010001 & b_22=1 & b_21=0 & b_15=0 & aa_Wt & Rn_GPR64x
 # AUNIT --inst xc8c00000/mask=xffe08000 --status nomem
 # size=0b11 (3031)
 
-:ldlar aa_Xt, [Rn_GPR64xsp]
-is b_3031=0b11 & b_2329=0b0010001 & b_22=1 & b_21=0 & b_15=0 & aa_Xt & Rn_GPR64xsp
+:ldlar aa_Xt, [Rn_GPR129csp]
+is b_3031=0b11 & b_2329=0b0010001 & b_22=1 & b_21=0 & b_15=0 & aa_Xt & Rn_GPR64xsp & Rn_GPR129csp
 { LOAcquire(); aa_Xt = *:8 Rn_GPR64xsp; }
 
 # C6.2.163 LDNP page C6-1544 line 91702 MATCH x28400000/mask=x7fc00000
@@ -5540,8 +5540,8 @@ is sf=1 & op.dp3_op54=0 & b_2428=0x1b & op.dp3_op31=1 & Rm_GPR32 & op.dp3_o0=0 &
 
 # size=0b00 (3031)
 
-:st^ls_opc1^ls_lor^"b" aa_Ws, [Rn_GPR64xsp]
-is b_3031=0b00 & b_2429=0b111000 & b_23=0 & b_21=1 & b_1515=0 & b_1011=0b00 & b_0004=0b11111 & ls_opc1 & ls_lor & aa_Ws & Rn_GPR64xsp
+:st^ls_opc1^ls_lor^"b" aa_Ws, [Rn_GPR129csp]
+is b_3031=0b00 & b_2429=0b111000 & b_23=0 & b_21=1 & b_1515=0 & b_1011=0b00 & b_0004=0b11111 & ls_opc1 & ls_lor & aa_Ws & Rn_GPR64xsp & Rn_GPR129csp
 { build ls_opc1; build ls_lor; }
 
 # C6.2.296 STADDH, STADDLH page C6-1820 line 107469 MATCH x7820001f/mask=xffa0fc1f
@@ -5565,8 +5565,8 @@ is b_3031=0b00 & b_2429=0b111000 & b_23=0 & b_21=1 & b_1515=0 & b_1011=0b00 & b_
 
 # size=0b01 (3031)
 
-:st^ls_opc2^ls_lor^"h" aa_Ws, [Rn_GPR64xsp]
-is b_3031=0b01 & b_2429=0b111000 & b_23=0 & b_21=1 & b_1515=0 & b_1011=0b00 & b_0004=0b11111 & ls_opc2 & ls_lor & aa_Ws & Rn_GPR64xsp
+:st^ls_opc2^ls_lor^"h" aa_Ws, [Rn_GPR129csp]
+is b_3031=0b01 & b_2429=0b111000 & b_23=0 & b_21=1 & b_1515=0 & b_1011=0b00 & b_0004=0b11111 & ls_opc2 & ls_lor & aa_Ws & Rn_GPR64xsp & Rn_GPR129csp
 { build ls_opc2; build ls_lor; }
 
 # C6.2.297 STADD, STADDL page C6-1822 line 107555 MATCH xb820001f/mask=xbfa0fc1f
@@ -5590,8 +5590,8 @@ is b_3031=0b01 & b_2429=0b111000 & b_23=0 & b_21=1 & b_1515=0 & b_1011=0b00 & b_
 
 # size=0b10 (3031)
 
-:st^ls_opc4^ls_lor aa_Ws, [Rn_GPR64xsp]
-is b_3031=0b10 & b_2429=0b111000 & b_23=0 & b_21=1 & b_1515=0 & b_1011=0b00 & b_0004=0b11111 & ls_opc4 & ls_lor & aa_Ws & Rn_GPR64xsp
+:st^ls_opc4^ls_lor aa_Ws, [Rn_GPR129csp]
+is b_3031=0b10 & b_2429=0b111000 & b_23=0 & b_21=1 & b_1515=0 & b_1011=0b00 & b_0004=0b11111 & ls_opc4 & ls_lor & aa_Ws & Rn_GPR64xsp & Rn_GPR129csp
 { build ls_opc4; build ls_lor; }
 
 # C6.2.297 STADD, STADDL page C6-1822 line 107555 MATCH xb820001f/mask=xbfa0fc1f
@@ -5614,8 +5614,8 @@ is b_3031=0b10 & b_2429=0b111000 & b_23=0 & b_21=1 & b_1515=0 & b_1011=0b00 & b_
 # AUNIT --inst xf820001f/mask=xffa08c1f --status nomem
 # size=0b11 (3031)
 
-:st^ls_opc8^ls_lor aa_Xs, [Rn_GPR64xsp]
-is b_3031=0b11 & b_2429=0b111000 & b_23=0 & b_21=1 & b_1515=0 & b_1011=0b00 & b_0004=0b11111 & ls_opc8 & ls_lor & aa_Xs & Rn_GPR64xsp
+:st^ls_opc8^ls_lor aa_Xs, [Rn_GPR129csp]
+is b_3031=0b11 & b_2429=0b111000 & b_23=0 & b_21=1 & b_1515=0 & b_1011=0b00 & b_0004=0b11111 & ls_opc8 & ls_lor & aa_Xs & Rn_GPR64xsp & Rn_GPR129csp
 { build ls_opc8; build ls_lor; }
 
 # C6.2.307 STLLRB page C6-1842 line 108609 MATCH x08800000/mask=xffe08000
@@ -5624,8 +5624,8 @@ is b_3031=0b11 & b_2429=0b111000 & b_23=0 & b_21=1 & b_1515=0 & b_1011=0b00 & b_
 # To enforce SHOULD BE ONE fields add: b_1620=0b11111 & b_1014=0b11111
 # size=0b00 (3031)
 
-:stllrb aa_Wt, [Rn_GPR64xsp]
-is b_3031=0b00 & b_2329=0b0010001 & b_22=0 & b_21=0 & b_15=0 & aa_Wt & Rn_GPR64xsp
+:stllrb aa_Wt, [Rn_GPR129csp]
+is b_3031=0b00 & b_2329=0b0010001 & b_22=0 & b_21=0 & b_15=0 & aa_Wt & Rn_GPR64xsp & Rn_GPR129csp
 { *:1 Rn_GPR64xsp = aa_Wt:1; LORelease(); }
 
 # C6.2.308 STLLRH page C6-1843 line 108673 MATCH x48800000/mask=xffe08000
@@ -5634,8 +5634,8 @@ is b_3031=0b00 & b_2329=0b0010001 & b_22=0 & b_21=0 & b_15=0 & aa_Wt & Rn_GPR64x
 # To enforce SHOULD BE ONE fields add: b_1620=0b11111 & b_1014=0b11111
 # size=0b01 (3031)
 
-:stllrh aa_Wt, [Rn_GPR64xsp]
-is b_3031=0b01 & b_2329=0b0010001 & b_22=0 & b_21=0 & b_15=0 & aa_Wt & Rn_GPR64xsp
+:stllrh aa_Wt, [Rn_GPR129csp]
+is b_3031=0b01 & b_2329=0b0010001 & b_22=0 & b_21=0 & b_15=0 & aa_Wt & Rn_GPR64xsp & Rn_GPR129csp
 { *:2 Rn_GPR64xsp = aa_Wt:2; LORelease(); }
 
 # C6.2.309 STLLR page C6-1844 line 108737 MATCH x88800000/mask=xbfe08000
@@ -5644,8 +5644,8 @@ is b_3031=0b01 & b_2329=0b0010001 & b_22=0 & b_21=0 & b_15=0 & aa_Wt & Rn_GPR64x
 # To enforce SHOULD BE ONE fields add: b_1620=0b11111 & b_1014=0b11111
 # size=0b10 (3031)
 
-:stllr aa_Wt, [Rn_GPR64xsp]
-is b_3031=0b10 & b_2329=0b0010001 & b_22=0 & b_21=0 & b_15=0 & aa_Wt & Rn_GPR64xsp
+:stllr aa_Wt, [Rn_GPR129csp]
+is b_3031=0b10 & b_2329=0b0010001 & b_22=0 & b_21=0 & b_15=0 & aa_Wt & Rn_GPR64xsp & Rn_GPR129csp
 { *:4 Rn_GPR64xsp = aa_Wt; LORelease(); }
 
 # C6.2.309 STLLR page C6-1844 line 108737 MATCH x88800000/mask=xbfe08000
@@ -5654,8 +5654,8 @@ is b_3031=0b10 & b_2329=0b0010001 & b_22=0 & b_21=0 & b_15=0 & aa_Wt & Rn_GPR64x
 # To enforce SHOULD BE ONE fields add: b_1620=0b11111 & b_1014=0b11111
 # size=0b11 (3031)
 
-:stllr aa_Xt, [Rn_GPR64xsp]
-is b_3031=0b11 & b_2329=0b0010001 & b_22=0 & b_21=0 & b_15=0 & aa_Xt & Rn_GPR64xsp
+:stllr aa_Xt, [Rn_GPR129csp]
+is b_3031=0b11 & b_2329=0b0010001 & b_22=0 & b_21=0 & b_15=0 & aa_Xt & Rn_GPR64xsp & Rn_GPR129csp
 { *:8 Rn_GPR64xsp = aa_Xt; LORelease(); }
 
 # C6.2.310 STLR page C6-1846 line 108821 MATCH x88808000/mask=xbfe08000
@@ -6508,8 +6508,8 @@ is b_2431=0xd4 & excCode=0 & imm16 & excCode2=0 & ll=1
 
 # size=0b00 (3031)
 
-:swp^ls_lor^"b" aa_Ws, aa_Wt, [Rn_GPR64xsp]
-is b_3031=0b00 & b_2429=0b111000 & b_21=1 & b_1215=0b1000 & b_1011=0b00 & ls_loa & ls_lor & aa_Wt & ls_data1 & ls_mem1 & aa_Ws & Rn_GPR64xsp
+:swp^ls_lor^"b" aa_Ws, aa_Wt, [Rn_GPR129csp]
+is b_3031=0b00 & b_2429=0b111000 & b_21=1 & b_1215=0b1000 & b_1011=0b00 & ls_loa & ls_lor & aa_Wt & ls_data1 & ls_mem1 & aa_Ws & Rn_GPR64xsp & Rn_GPR129csp
 { build ls_loa; build ls_data1; ls_opc_swp(tmp_ldWn, aa_Ws, tmp_stWn); build ls_mem1; aa_Wt = tmp_ldWn; build ls_lor; }
 
 # C6.2.367 SWPH, SWPAH, SWPALH, SWPLH page C6-1960 line 115079 MATCH x78208000/mask=xff20fc00
@@ -6518,8 +6518,8 @@ is b_3031=0b00 & b_2429=0b111000 & b_21=1 & b_1215=0b1000 & b_1011=0b00 & ls_loa
 
 # size=0b01 (3031)
 
-:swp^ls_lor^"h" aa_Ws, aa_Wt, [Rn_GPR64xsp]
-is b_3031=0b01 & b_2429=0b111000 & b_21=1 & b_1215=0b1000 & b_1011=0b00 & ls_loa & ls_lor & aa_Wt & ls_data2 & ls_mem2 & aa_Ws & Rn_GPR64xsp
+:swp^ls_lor^"h" aa_Ws, aa_Wt, [Rn_GPR129csp]
+is b_3031=0b01 & b_2429=0b111000 & b_21=1 & b_1215=0b1000 & b_1011=0b00 & ls_loa & ls_lor & aa_Wt & ls_data2 & ls_mem2 & aa_Ws & Rn_GPR64xsp & Rn_GPR129csp
 { build ls_loa; build ls_data2; ls_opc_swp(tmp_ldWn, aa_Ws, tmp_stWn); build ls_mem2; aa_Wt = tmp_ldWn; build ls_lor; }
 
 # C6.2.368 SWP, SWPA, SWPAL, SWPL page C6-1962 line 115186 MATCH xb8208000/mask=xbf20fc00
@@ -6528,8 +6528,8 @@ is b_3031=0b01 & b_2429=0b111000 & b_21=1 & b_1215=0b1000 & b_1011=0b00 & ls_loa
 
 # size=0b10 (3031)
 
-:swp^ls_lor aa_Ws, aa_Wt, [Rn_GPR64xsp]
-is b_3031=0b10 & b_2429=0b111000 & b_21=1 & b_1215=0b1000 & b_1011=0b00 & ls_loa & ls_lor & aa_Wt & ls_data4 & ls_mem4 & aa_Ws & Rn_GPR64xsp
+:swp^ls_lor aa_Ws, aa_Wt, [Rn_GPR129csp]
+is b_3031=0b10 & b_2429=0b111000 & b_21=1 & b_1215=0b1000 & b_1011=0b00 & ls_loa & ls_lor & aa_Wt & ls_data4 & ls_mem4 & aa_Ws & Rn_GPR64xsp & Rn_GPR129csp
 { build ls_loa; build ls_data4; ls_opc_swp(tmp_ldWn, aa_Ws, tmp_stWn); build ls_mem4; aa_Wt = tmp_ldWn; build ls_lor; }
 
 # C6.2.368 SWP, SWPA, SWPAL, SWPL page C6-1962 line 115186 MATCH xb8208000/mask=xbf20fc00
@@ -6538,8 +6538,8 @@ is b_3031=0b10 & b_2429=0b111000 & b_21=1 & b_1215=0b1000 & b_1011=0b00 & ls_loa
 
 # size=0b11 (3031)
 
-:swp^ls_lor aa_Xs, aa_Xt, [Rn_GPR64xsp]
-is b_3031=0b11 & b_2429=0b111000 & b_21=1 & b_1215=0b1000 & b_1011=0b00 & ls_loa & ls_lor & aa_Xt & ls_data8 & ls_mem8 & aa_Xs & Rn_GPR64xsp
+:swp^ls_lor aa_Xs, aa_Xt, [Rn_GPR129csp]
+is b_3031=0b11 & b_2429=0b111000 & b_21=1 & b_1215=0b1000 & b_1011=0b00 & ls_loa & ls_lor & aa_Xt & ls_data8 & ls_mem8 & aa_Xs & Rn_GPR64xsp & Rn_GPR129csp
 { build ls_loa; build ls_data8; ls_opc_swp(tmp_ldXn, aa_Xs, tmp_stXn); build ls_mem8; aa_Xt = tmp_ldXn; build ls_lor; }
 
 # C6.2.369 SXTB page C6-1964 line 115324 MATCH x13001c00/mask=x7fbffc00
