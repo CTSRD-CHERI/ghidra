@@ -26,6 +26,7 @@ public class Scalar {
 	private final byte bitLength;
 	private final byte unusedBits; // complement of bitLength
 	private final boolean signed;
+	private final boolean fakeWide; // FIXME: ugly hack to deal with CHERI wide registers
 
 	/**
 	 * Construct a new signed scalar object.
@@ -45,11 +46,18 @@ public class Scalar {
 	 * @param signed true for a signed value, false for an unsigned value.
 	 */
 	public Scalar(int bitLength, long value, boolean signed) {
-		if (!(bitLength == 0 && value == 0) && (bitLength < 1 || bitLength > 64)) {
-			throw new IllegalArgumentException("Bit length must be >= 1 and <= 64");
+		if (!(bitLength == 0 && value == 0) && (bitLength < 1 || bitLength > 128)) {
+			throw new IllegalArgumentException("Bit length must be >= 1 and <= 128");
 		}
 		this.signed = signed;
-		this.bitLength = (byte) bitLength;
+		// FIXME: ugly hack to deal with CHERI wide registers
+		if (bitLength == 128) {
+			this.bitLength = (byte) 64;
+			this.fakeWide = true;
+		} else {
+			this.bitLength = (byte) bitLength;
+			this.fakeWide = false;
+		}
 		this.unusedBits = (byte)(64 /*sizeof(long)*8*/ - bitLength);
 		this.value = (value << unusedBits) >>> unusedBits; // eliminate upper bits that are outside bitLength
 	}

@@ -2875,7 +2875,7 @@ void TypeFactory::clearCache(void)
 
 {
   int4 i,j;
-  for(i=0;i<9;++i)
+  for(i=0;i<17;++i)
     for(j=0;j<8;++j)
       typecache[i][j] = (Datatype *)0;
   typecache10 = (Datatype *)0;
@@ -2894,7 +2894,7 @@ void TypeFactory::setupSizes(void)
       const VarnodeData &spdata(spc->getSpacebase(0));		// Use stack pointer as likely indicator of "int" size
       sizeOfInt = spdata.size;
       if (sizeOfInt > 4)					// "int" is rarely bigger than 4 bytes
-	sizeOfInt = 4;
+	      sizeOfInt = 4;
     }
   }
   if (sizeOfLong == 0) {
@@ -2954,12 +2954,10 @@ void TypeFactory::cacheCoreTypes(void)
     if (!ct->isCoreType()) continue;
     if (ct->getSize() > 8) {
       if (ct->getMetatype() == TYPE_FLOAT) {
-	if (ct->getSize() == 10)
-	  typecache10 = ct;
-	else if (ct->getSize() == 16)
-	  typecache16 = ct;
+        if (ct->getSize() == 10) typecache10 = ct;
+        else if (ct->getSize() == 16) typecache16 = ct;
       }
-      continue;
+      // continue;
     }
     switch(ct->getMetatype()) {
     case TYPE_INT:
@@ -3457,12 +3455,9 @@ Datatype *TypeFactory::getBase(int4 s,type_metatype m)
 
 {
   Datatype *ct;
-  if (s<9) {
-    if (m >= TYPE_FLOAT) {
-      ct = typecache[s][m-TYPE_FLOAT];
-      if (ct != (Datatype *)0)
-	return ct;
-    }
+  if (m >= TYPE_FLOAT && s<17) {
+    ct = typecache[s][m-TYPE_FLOAT];
+    if (ct != (Datatype *)0) return ct;
   }
   else if (m==TYPE_FLOAT) {
     if (s==10)

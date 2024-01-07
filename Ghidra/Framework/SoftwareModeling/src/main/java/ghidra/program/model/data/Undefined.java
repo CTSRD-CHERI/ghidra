@@ -34,7 +34,8 @@ public abstract class Undefined extends BuiltIn {
 				new Undefined[] { Undefined1DataType.dataType, Undefined2DataType.dataType,
 					Undefined3DataType.dataType, Undefined4DataType.dataType,
 					Undefined5DataType.dataType, Undefined6DataType.dataType,
-					Undefined7DataType.dataType, Undefined8DataType.dataType };
+					Undefined7DataType.dataType, Undefined8DataType.dataType,
+					Undefined16DataType.dataType };
 		}
 		return undefinedTypes;
 	}
@@ -47,6 +48,9 @@ public abstract class Undefined extends BuiltIn {
 	public static DataType getUndefinedDataType(int size) {
 		if (size < 1) {
 			return DefaultDataType.dataType;
+		}
+		if (size == 16) {
+			return Undefined16DataType.dataType;
 		}
 		if (size > 8) {
 			return new ArrayDataType(Undefined1DataType.dataType, size, 1);

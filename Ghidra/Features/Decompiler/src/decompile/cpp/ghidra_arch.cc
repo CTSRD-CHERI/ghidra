@@ -350,6 +350,7 @@ void ArchitectureGhidra::buildCoreTypes(DocumentStorage &store)
     types->setCoreType("undefined2",2,TYPE_UNKNOWN,false);
     types->setCoreType("undefined4",4,TYPE_UNKNOWN,false);
     types->setCoreType("undefined8",8,TYPE_UNKNOWN,false);
+    types->setCoreType("undefined16", 16, TYPE_UNKNOWN, false);
     types->setCoreType("code",1,TYPE_CODE,false);
     types->setCoreType("wchar",2,TYPE_INT,true);
     types->cacheCoreTypes();

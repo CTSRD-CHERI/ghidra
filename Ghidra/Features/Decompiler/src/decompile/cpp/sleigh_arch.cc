@@ -231,6 +231,7 @@ void SleighArchitecture::buildCoreTypes(DocumentStorage &store)
     types->setCoreType("xunknown2",2,TYPE_UNKNOWN,false);
     types->setCoreType("xunknown4",4,TYPE_UNKNOWN,false);
     types->setCoreType("xunknown8",8,TYPE_UNKNOWN,false);
+    types->setCoreType("xunknown16",16,TYPE_UNKNOWN,false);
     types->setCoreType("code",1,TYPE_CODE,false);
     types->setCoreType("char",1,TYPE_INT,true);
     types->setCoreType("wchar2",2,TYPE_INT,true);

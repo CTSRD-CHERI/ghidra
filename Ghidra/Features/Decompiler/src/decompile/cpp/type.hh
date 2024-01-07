@@ -706,7 +706,7 @@ class TypeFactory {
   vector<int4> alignMap;	///< Alignment of primitive data-types based on their size
   DatatypeSet tree;		///< Datatypes within this factory (sorted by function)
   DatatypeNameSet nametree;	///< Cross-reference by name
-  Datatype *typecache[9][8];	///< Matrix of the most common atomic data-types
+  Datatype *typecache[17][8];	///< Matrix of the most common atomic data-types
   Datatype *typecache10;	///< Specially cached 10-byte float type
   Datatype *typecache16;	///< Specially cached 16-byte float type
   Datatype *type_nochar;	///< Same dimensions as char but acts and displays as an INT

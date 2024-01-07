@@ -548,7 +548,7 @@ bool ConsistencyChecker::sizeRestriction(OpTpl *op,Constructor *ct)
       return false;
     }
     if ((vn1!=0)&&(vn1 != spc->getAddrSize())) {
-      printOpError(op,ct,1,1,"Pointer size must match size of space");
+      printOpError(op,ct,1,1,"Pointer size must match size of space: " + to_string(+ spc->getAddrSize()));
       return false;
     }
     return true;
