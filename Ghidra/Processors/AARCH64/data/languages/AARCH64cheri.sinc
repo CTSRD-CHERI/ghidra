@@ -6,7 +6,7 @@
 :add Rd_GPR129csp, Rn_GPR129csp, morello_imm12_addsubimm_operand_i64_posimm_lsl0
 is toplevel.op0=0 & toplevel=0x2 & b_23=0 & b_22=0 & morello_imm12_addsubimm_operand_i64_posimm_lsl0 & Rn_GPR129csp & Rd_GPR129csp & ShowC64=1 & Rd_GPR64xsp & Rn_GPR64xsp
 {
-	Rd_GPR64xsp = Rn_GPR64xsp + morello_imm12_addsubimm_operand_i64_posimm_lsl0;
+	Rd_GPR129csp = zext(Rn_GPR64xsp + morello_imm12_addsubimm_operand_i64_posimm_lsl0);
 	# if cap is sealed, clear tag bit
 	tmp:1 = CapIsSealed(Rd_GPR129csp);
 	if (!tmp) goto <skip>;
@@ -16,13 +16,13 @@ is toplevel.op0=0 & toplevel=0x2 & b_23=0 & b_22=0 & morello_imm12_addsubimm_ope
 :add Rd_GPR129csp, Rn_GPR129csp, morello_imm12_addsubimm_operand_i64_posimm_lsl0
 is toplevel.op0=0 & toplevel=0x2 & b_23=0 & b_22=0 & morello_imm12_addsubimm_operand_i64_posimm_lsl0 & Rn_GPR129csp & Rd_GPR129csp & ShowC64=0 & Rd_GPR64xsp & Rn_GPR64xsp
 {
-	Rd_GPR64xsp = Rn_GPR64xsp + morello_imm12_addsubimm_operand_i64_posimm_lsl0;
+	Rd_GPR129csp = zext(Rn_GPR64xsp + morello_imm12_addsubimm_operand_i64_posimm_lsl0);
 }
 
 :add Rd_GPR129csp, Rn_GPR129csp, morello_imm12_addsubimm_operand_i64_posimm_lsl12
 is toplevel.op0=0 & toplevel=0x2 & b_23=0 & b_22=1 & morello_imm12_addsubimm_operand_i64_posimm_lsl12 & Rn_GPR129csp & Rd_GPR129csp & ShowC64=1 & Rd_GPR64xsp & Rn_GPR64xsp
 {
-	Rd_GPR64xsp = Rn_GPR64xsp + morello_imm12_addsubimm_operand_i64_posimm_lsl12;
+	Rd_GPR129csp = zext(Rn_GPR64xsp + morello_imm12_addsubimm_operand_i64_posimm_lsl12);
 	# if cap is sealed, clear tag bit
 	tmp:1 = CapIsSealed(Rd_GPR129csp);
 	if (!tmp) goto <skip>;
@@ -32,13 +32,13 @@ is toplevel.op0=0 & toplevel=0x2 & b_23=0 & b_22=1 & morello_imm12_addsubimm_ope
 :add Rd_GPR129csp, Rn_GPR129csp, morello_imm12_addsubimm_operand_i64_posimm_lsl12
 is toplevel.op0=0 & toplevel=0x2 & b_23=0 & b_22=1 & morello_imm12_addsubimm_operand_i64_posimm_lsl12 & Rn_GPR129csp & Rd_GPR129csp & ShowC64=0 & Rd_GPR64xsp & Rn_GPR64xsp
 {
-	Rd_GPR64xsp = Rn_GPR64xsp + morello_imm12_addsubimm_operand_i64_posimm_lsl12;
+	Rd_GPR129csp = zext(Rn_GPR64xsp + morello_imm12_addsubimm_operand_i64_posimm_lsl12);
 }
 
 :sub Rd_GPR129csp, Rn_GPR129csp, morello_imm12_addsubimm_operand_i64_negimm_lsl0
 is toplevel.op0=0 & toplevel=0x2 & b_23=1 & b_22=0 & morello_imm12_addsubimm_operand_i64_negimm_lsl0 & Rn_GPR129csp & Rd_GPR129csp & ShowC64=1 & Rd_GPR64xsp & Rn_GPR64xsp
 {
-	Rd_GPR64xsp = Rn_GPR64xsp - morello_imm12_addsubimm_operand_i64_negimm_lsl0;
+	Rd_GPR129csp = zext(Rn_GPR64xsp - morello_imm12_addsubimm_operand_i64_negimm_lsl0);
 	# if cap is sealed, clear tag bit
 	tmp:1 = CapIsSealed(Rd_GPR129csp);
 	if (!tmp) goto <skip>;
@@ -48,13 +48,13 @@ is toplevel.op0=0 & toplevel=0x2 & b_23=1 & b_22=0 & morello_imm12_addsubimm_ope
 :sub Rd_GPR129csp, Rn_GPR129csp, morello_imm12_addsubimm_operand_i64_negimm_lsl0
 is toplevel.op0=0 & toplevel=0x2 & b_23=1 & b_22=0 & morello_imm12_addsubimm_operand_i64_negimm_lsl0 & Rn_GPR129csp & Rd_GPR129csp & ShowC64=0 & Rd_GPR64xsp & Rn_GPR64xsp
 {
-	Rd_GPR64xsp = Rn_GPR64xsp - morello_imm12_addsubimm_operand_i64_negimm_lsl0;
+	Rd_GPR129csp = zext(Rn_GPR64xsp - morello_imm12_addsubimm_operand_i64_negimm_lsl0);
 }
 
 :sub Rd_GPR129csp, Rn_GPR129csp, morello_imm12_addsubimm_operand_i64_negimm_lsl12
 is toplevel.op0=0 & toplevel=0x2 & b_23=1 & b_22=1 & morello_imm12_addsubimm_operand_i64_negimm_lsl12 & Rn_GPR129csp & Rd_GPR129csp & ShowC64=1 & Rd_GPR64xsp & Rn_GPR64xsp
 {
-	Rd_GPR64xsp = Rn_GPR64xsp - morello_imm12_addsubimm_operand_i64_negimm_lsl12;
+	Rd_GPR129csp = zext(Rn_GPR64xsp - morello_imm12_addsubimm_operand_i64_negimm_lsl12);
 	# if cap is sealed, clear tag bit
 	tmp:1 = CapIsSealed(Rd_GPR129csp);
 	if (!tmp) goto <skip>;
@@ -64,7 +64,7 @@ is toplevel.op0=0 & toplevel=0x2 & b_23=1 & b_22=1 & morello_imm12_addsubimm_ope
 :sub Rd_GPR129csp, Rn_GPR129csp, morello_imm12_addsubimm_operand_i64_negimm_lsl12
 is toplevel.op0=0 & toplevel=0x2 & b_23=1 & b_22=1 & morello_imm12_addsubimm_operand_i64_negimm_lsl12 & Rn_GPR129csp & Rd_GPR129csp & ShowC64=0 & Rd_GPR64xsp & Rn_GPR64xsp
 {
-	Rd_GPR64xsp = Rn_GPR64xsp - morello_imm12_addsubimm_operand_i64_negimm_lsl12;
+	Rd_GPR129csp = zext(Rn_GPR64xsp - morello_imm12_addsubimm_operand_i64_negimm_lsl12);
 }
 
 # Morello load/exclusive (toplevel.op0=0x1 & toplevel=0x2 & b_23=0)
@@ -153,8 +153,8 @@ is toplevel.op0=0x1 & toplevel=0x2 & b_23=0 & b_22=1 & b_21=1 & b_15=1 & b_1620=
 is toplevel.op0=0x1 & toplevel=0x2 & b_23=1 & b_22=0 & Rt_GPR129 & Rt2_GPR129 & CAddrPairIndexed & Rt_GPR64 & Rt2_GPR64
 {
 	build CAddrPairIndexed;
-	*:8 CAddrPairIndexed = Rt_GPR64;
-	*:8 (CAddrPairIndexed + 16) = Rt2_GPR64;
+	*:16 CAddrPairIndexed = Rt_GPR129;
+	*:16 (CAddrPairIndexed + 16) = Rt2_GPR129;
 }
 
 :ldp Rt_GPR129, Rt2_GPR129, CAddrPairIndexed
@@ -221,15 +221,17 @@ is toplevel.op0=0b10 & toplevel=0x2 & b_23=0 & b_21=1 & b_22=1 & b_1620=0b11111 
 is toplevel.op0=0b10 & toplevel=0x2 & b_23=1 & b_22=0 & Rt_GPR129 & Rt2_GPR129 & CAddrPairIndexed & Rt_GPR64 & Rt2_GPR64
 {
 	build CAddrPairIndexed;
-	*:8 CAddrPairIndexed = Rt_GPR64;
-	*:8 (CAddrPairIndexed + 16) = Rt2_GPR64;
+	*:16 CAddrPairIndexed = Rt_GPR129;
+	*:16 (CAddrPairIndexed + 16) = Rt2_GPR129;
 }
 
 :ldp Rt_GPR129, Rt2_GPR129, CAddrPairIndexed
 is toplevel.op0=0b10 & toplevel=0x2 & b_23=1 & b_22=1 & Rt_GPR129 & Rt2_GPR129 & CAddrPairIndexed & Rt_GPR64 & Rt2_GPR64
 {
-	Rt_GPR64 = *:8 CAddrPairIndexed;
-	Rt2_GPR64 = *:8 (CAddrPairIndexed + 16);
+	Rt_GPR129 = *:16 CAddrPairIndexed;
+	Rt2_GPR129 = *:16 (CAddrPairIndexed + 16);
+	# Rt_GPR64 = *:8 CAddrPairIndexed;
+	# Rt2_GPR64 = *:8 (CAddrPairIndexed + 16);
 }
 
 # Morello load/store pair non-temporal (toplevel.op0=0b11 & toplevel=0x2 & b_23=0)
@@ -268,8 +270,8 @@ is toplevel.op0=0b11 & toplevel=0x2 & b_23=1 & b_22=1 & Rt_GPR129 & Rt2_GPR129 &
 :ldr Rt_GPR129, AddrLoc17
 is toplevel.op0=0b100 & toplevel=0x2 & b_23=0 & b_22=0 & Rt_GPR129 & AddrLoc17 & Rt_GPR64
 {
-	Rt_GPR64 = *:8 AddrLoc17;
-	# Rt_GPR129 = *:16 AddrLoc17;
+	# Rt_GPR64 = *:8 AddrLoc17;
+	Rt_GPR129 = *:16 AddrLoc17;
 }
 
 # Morello load/store unsigned offset via alternate base (toplevel.op0=0b100 & toplevel=0x2 & b_23=0 & b_22=1)
@@ -277,7 +279,7 @@ is toplevel.op0=0b100 & toplevel=0x2 & b_23=0 & b_22=0 & Rt_GPR129 & AddrLoc17 &
 is toplevel.op0=0b100 & toplevel=0x2 & b_23=0 & b_22=1 & b_21=0 & b_1011=0 & CAddrIndexed & Rt_GPR129 & Rt_GPR64
 {
 	build CAddrIndexed;
-	*:8 CAddrIndexed = Rt_GPR64;
+	*:16 CAddrIndexed = Rt_GPR129;
 }
 
 :strb Rt_GPR32, CAddrIndexed
@@ -307,8 +309,7 @@ is toplevel.op0=0b100 & toplevel=0x2 & b_23=0 & b_22=1 & b_21=0 & b_1011=3 & CAd
 :ldr Rt_GPR129, CAddrIndexed
 is toplevel.op0=0b100 & toplevel=0x2 & b_23=0 & b_22=1 & b_21=1 & b_1011=0 & CAddrIndexed & Rt_GPR129 & Rt_GPR64
 {
-	Rt_GPR64 = *:8 CAddrIndexed;
-	# Rt_GPR64 = *:8 CAddrIndexed;
+	Rt_GPR129 = *:16 CAddrIndexed;
 }
 
 :ldrb Rt_GPR32, CAddrIndexed
@@ -471,13 +472,13 @@ is toplevel.op0=0b101 & toplevel=0x2 & b_21=0 & b_1011=0 & b_2223=1 & Rt_GPR129 
 is toplevel.op0=0b101 & toplevel=0x2 & b_21=0 & b_1011=1 & b_2223=0 & Rt_GPR129 & CAddrIndexed & Rt_GPR64
 {
 	build CAddrIndexed;
-	*:8 CAddrIndexed = Rt_GPR64;
+	*:16 CAddrIndexed = Rt_GPR129;
 }
 
 :ldr Rt_GPR129, CAddrIndexed
 is toplevel.op0=0b101 & toplevel=0x2 & b_21=0 & b_1011=1 & b_2223=1 & Rt_GPR129 & CAddrIndexed & Rt_GPR64
 {
-	Rt_GPR64 = *:8 CAddrIndexed;
+	Rt_GPR129 = *:16 CAddrIndexed;
 }
 
 # Morello load/store immediate translated (toplevel.op0=0b101 & toplevel=0x2 & b_21=0 & b_1011=2)
@@ -499,14 +500,13 @@ is toplevel.op0=0b101 & toplevel=0x2 & b_21=0 & b_1011=2 & b_2223=1 & Rt_GPR129 
 is toplevel.op0=0b101 & toplevel=0x2 & b_21=0 & b_1011=3 & b_2223=0 & Rt_GPR129 & CAddrIndexed & Rt_GPR64
 {
 	build CAddrIndexed;
-	*:8 CAddrIndexed = Rt_GPR64;
+	*:16 CAddrIndexed = Rt_GPR129;
 }
 
 :ldr Rt_GPR129, CAddrIndexed
 is toplevel.op0=0b101 & toplevel=0x2 & b_21=0 & b_1011=3 & b_2223=1 & Rt_GPR129 & CAddrIndexed & Rt_GPR64
 {
-	Rt_GPR64 = *:8 CAddrIndexed;
-	# Rt_GPR64 = *:8 CAddrIndexed;
+	Rt_GPR129 = *:16 CAddrIndexed;
 }
 
 # Morello swap (toplevel.op0=0b101 & toplevel=0x2 & b_21=1 & b_1015=0b100000)
@@ -612,15 +612,14 @@ is toplevel.op0=0b101 & toplevel=0x2 & b_21=1 & b_1014=0b11111 & b_2223=3 & b_15
 is toplevel.op0=0b101 & toplevel=0x2 & b_21=1 & b_14=1 & b_1011=2 & b_2223=0 & Rt_GPR129 & CAddrIndexed & Rt_GPR64
 {
 	build CAddrIndexed;
-	*:8 CAddrIndexed = Rt_GPR64;
+	*:16 CAddrIndexed = Rt_GPR129;
 }
 
 # scale=4
 :ldr Rt_GPR129, CAddrIndexed
 is toplevel.op0=0b101 & toplevel=0x2 & b_21=1 & b_14=1 & b_1011=2 & b_2223=1 & Rt_GPR129 & CAddrIndexed & Rt_GPR64
 {
-	Rt_GPR64 = *:8 CAddrIndexed;
-	# Rt_GPR64 = *:8 CAddrIndexed;
+	Rt_GPR129 = *:16 CAddrIndexed;
 }
 
 # Morello load/store unsigned offset (toplevel.op0=0b110 & toplevel=0x2 & b_23=0)
@@ -628,13 +627,13 @@ is toplevel.op0=0b101 & toplevel=0x2 & b_21=1 & b_14=1 & b_1011=2 & b_2223=1 & R
 is toplevel.op0=0b110 & toplevel=0x2 & b_23=0 & b_22=0 & Rt_GPR129 & CAddrIndexed & Rt_GPR64
 {
 	build CAddrIndexed;
-	*:8 CAddrIndexed = Rt_GPR64;
+	*:16 CAddrIndexed = Rt_GPR129;
 }
 
 :ldr Rt_GPR129, CAddrIndexed
 is toplevel.op0=0b110 & toplevel=0x2 & b_23=0 & b_22=1 & Rt_GPR129 & CAddrIndexed & Rt_GPR64
 {
-	Rt_GPR64 = *:8 CAddrIndexed;
+	Rt_GPR129 = zext(*:8 CAddrIndexed);
 	# Rt_GPR64 = *:8 CAddrIndexed;
 }
 
@@ -1339,14 +1338,14 @@ is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_1112=3 & b_10=0 & b_21=1 
 is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_10=1 & b_21=1 & b_14=1 & b_11=0 & Rt_GPR129 & CAddrIndexed & Rt_GPR64
 {
 	build CAddrIndexed;
-	*:8 CAddrIndexed = Rt_GPR64;
+	*:16 CAddrIndexed = Rt_GPR129;
 }
 
 # LDR (register offset, capability, alternate base)
 :ldr Rt_GPR129, CAddrIndexed
 is toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_10=1 & b_21=1 & b_14=1 & b_11=1 & Rt_GPR129 & CAddrIndexed & Rt_GPR64
 {
-	Rt_GPR64 = *:8 CAddrIndexed;
+	Rt_GPR129 = *:16 CAddrIndexed;
 }
 
 ## Morello logical immediate (toplevel.op0=0b110 & toplevel=0x2 & b_2223=0b11 & b_10=0 & b_21=1)

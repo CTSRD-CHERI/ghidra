@@ -2374,18 +2374,19 @@ is b_2729=0b101 & b_2325=0b011 & Rn_GPR64xsp & addrPairScale & Rn_GPR129csp
 	export Rn_GPR64xsp;
 }
 
-# FIXME: currently Ghidra doesn't support scalars with bit length greater than 64. We need to refactor Ghidra model first. 
 # Scaled offset
 CAddrPairUIMM: "["^Rn_GPR129csp^"]"
-is Rn_GPR129csp & CAddrPairScale & simm7=0
+is Rn_GPR129csp & CAddrPairScale & simm7=0 & Rn_GPR64xsp
 {
-	export *[const]:8 Rn_GPR129csp;
+	tmp:8 = Rn_GPR64xsp;
+	export tmp;
 }
 
 CAddrPairUIMM: "["^Rn_GPR129csp, "#"^CAddrPairScale^"]"
-is Rn_GPR129csp & CAddrPairScale & simm7
+is Rn_GPR129csp & CAddrPairScale & simm7 & Rn_GPR64xsp
 {
-	export *[const]:8 Rn_GPR129csp;
+	tmp:8 = Rn_GPR64xsp + CAddrPairScale;
+	export tmp;
 }
 
 # unsigned offset
@@ -2404,16 +2405,19 @@ is b_2428=0b10 & b_2931=0b011 & b_23=0 & CAddrPairUIMM
 
 # post indexed wback
 CAddrPairIndexed: "["^Rn_GPR129csp^"]", "#"^CAddrPairScale
-is b_2428=0b10 & b_2931=1 & b_23=1 & Rn_GPR129csp & CAddrPairScale
+is b_2428=0b10 & b_2931=1 & b_23=1 & Rn_GPR129csp & CAddrPairScale & Rn_GPR64xsp
 {
-	export *[const]:8 Rn_GPR129csp;
+	tmp:8 = Rn_GPR64xsp;
+	Rn_GPR64xsp = Rn_GPR64xsp + CAddrPairScale;
+	export tmp;
 }
 
 # pre indexed wback
 CAddrPairIndexed: "["^Rn_GPR129csp, "#"^CAddrPairScale^"]!"
-is b_2428=0b10 & b_2931=0b011 & b_23=1 & Rn_GPR129csp & CAddrPairScale
+is b_2428=0b10 & b_2931=0b011 & b_23=1 & Rn_GPR129csp & CAddrPairScale & Rn_GPR64xsp 
 {
-	export *[const]:8 Rn_GPR129csp;
+	Rn_GPR64xsp = Rn_GPR64xsp + CAddrPairScale;
+	export Rn_GPR64xsp;
 }
 
 #### Undefined behavior on writeback ####
