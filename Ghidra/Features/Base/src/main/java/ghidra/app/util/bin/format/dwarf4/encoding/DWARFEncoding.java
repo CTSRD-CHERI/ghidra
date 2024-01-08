@@ -40,6 +40,8 @@ public final class DWARFEncoding
 	public static final int DW_ATE_decimal_float = 0xf;
 	public static final int DW_ATE_UTF = 0x10;
 	public static final int DW_ATE_lo_user = 0x80;
+	public static final int DW_ATE_CHERI_signed_intcap = 0xa0;
+	public static final int DW_ATE_CHERI_unsigned_intcap = 0xa1;
 	public static final int DW_ATE_hi_user = 0xff;
 
 	public static String getTypeName(int encoding) {

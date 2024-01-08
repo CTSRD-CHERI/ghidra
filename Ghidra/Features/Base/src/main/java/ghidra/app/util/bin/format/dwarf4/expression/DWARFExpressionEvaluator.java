@@ -294,6 +294,27 @@ public class DWARFExpressionEvaluator {
 			lastRegister = (int) currentOp.getOperandValue(0);
 			registerLoc = true;
 		}
+		else if (opcode == DW_OP_bregx) {
+			// Retrieve value held in register X and add offset from operand and push result on stack.
+			// Fake it using zero as register value.
+			// Mainly only useful if offset is zero or if non-zero the register happens to
+			// be the the stack pointer.
+			long offset = currentOp.getOperandValue(0);
+			push(0 /*fake register value */ + offset);
+			lastRegister = (int) currentOp.getOperandValue(0);
+
+			if (lastRegister == registerMappings.getDWARFStackPointerRegNum()) {
+				lastStackRelative = true;
+			}
+			else {
+				useUnknownRegister = true;
+				if (offset == 0) {
+					// if offset is 0, we can represent the location as a ghidra register location
+					// also implies a deref by the user of this location info
+					registerLoc = true;
+				}
+			}
+		}
 		else {
 			switch (opcode) {
 				case DW_OP_addr:
