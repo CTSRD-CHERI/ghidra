@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import ghidra.app.cmd.refs.RemoveReferenceCmd;
 import ghidra.app.util.bin.format.elf.*;
+import ghidra.app.plugin.cheri.datatype.GotCapabilityMetadataDataType;
 import ghidra.program.model.address.*;
 import ghidra.program.model.data.*;
 import ghidra.program.model.lang.Language;
@@ -529,13 +530,14 @@ public class AARCH64_ElfExtension extends ElfExtension {
 			Address nextGotAddr = gotStart;
 			while (gotEnd.subtract(nextGotAddr) >= pointerSize) {
 
-				data = createPointer(elfLoadHelper, nextGotAddr, true);
+				// data = createPointer(elfLoadHelper, nextGotAddr, true);
+				data = createPointerWithMetadata(elfLoadHelper, nextGotAddr, true);
 				if (data == null) {
 					break;
 				}
 
 				try {
-					nextGotAddr = data.getMaxAddress().add(1);
+					nextGotAddr = nextGotAddr.add(16);
 				}
 				catch (AddressOutOfBoundsException e) {
 					break; // no more room
@@ -547,6 +549,52 @@ public class AARCH64_ElfExtension extends ElfExtension {
 			elfLoadHelper.log(msg);
 			Msg.error(this, msg, e);
 		}
+	}
+
+	private Data createPointerWithMetadata(ElfLoadHelper elfLoadHelper, Address addr, boolean keepRefWhenValid)
+			throws CodeUnitInsertionException {
+		
+		ElfHeader elf = elfLoadHelper.getElfHeader();
+		Program program = elfLoadHelper.getProgram();
+		Memory memory = program.getMemory();
+		Listing listing = program.getListing();
+
+		MemoryBlock block = memory.getBlock(addr);
+		if (block == null || !block.isInitialized()) {
+			return null;
+		}
+		int pointerSize = program.getDataTypeManager().getDataOrganization().getPointerSize();
+		Pointer ptrDT = PointerDataType.dataType.clone(program.getDataTypeManager());
+		if (elf.is32Bit() && pointerSize != 4) {
+			ptrDT = Pointer32DataType.dataType;
+		}
+		else if (elf.is64Bit() && pointerSize != 8) {
+			ptrDT = Pointer64DataType.dataType;
+		}
+		Data data = listing.getDataAt(addr);
+		if (data == null || !ptrDT.isEquivalent(data.getDataType())) {
+			if (data != null) {
+				listing.clearCodeUnits(addr, addr.add(pointerSize - 1), false);
+			}
+			data = listing.createData(addr, ptrDT);
+		}
+		if (keepRefWhenValid && gotPltMarkup.isValidPointer(data)) {
+			// FIXME: check if it's null (shouldn't be possible)
+			gotPltMarkup.setConstant(data);
+		}
+		else {
+			removeMemRefs(data);
+		}
+		// parse the length and perms
+		Data metadata = listing.getDataAt(addr.add(pointerSize));  // TODO: exception handling
+		if (metadata == null || !GotCapabilityMetadataDataType.dataType.isEquivalent(metadata.getDataType())) {
+			if (metadata != null) {
+				listing.clearCodeUnits(addr.add(pointerSize), addr.add(pointerSize*2 - 1), false);
+			}
+			metadata = listing.createData(addr.add(pointerSize), GotCapabilityMetadataDataType.dataType);
+		}
+
+		return data;
 	}
 
 	private Data createPointer(ElfLoadHelper elfLoadHelper, Address addr, boolean keepRefWhenValid)

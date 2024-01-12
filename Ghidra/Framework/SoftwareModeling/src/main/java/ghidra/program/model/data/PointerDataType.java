@@ -406,7 +406,7 @@ public class PointerDataType extends BuiltIn implements Pointer {
 		if (pointerType == PointerType.RELATIVE) {
 			signedOffset = true;
 		}
-		// BUG: consider pointer C64 
+		// TODO: consider pointer C64 
 		Long offset = getStoredOffset(buf, size, signedOffset, errorHandler);
 		if (offset == null) {
 			return null;
