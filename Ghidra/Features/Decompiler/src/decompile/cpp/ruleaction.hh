@@ -781,6 +781,17 @@ public:
   virtual void getOpList(vector<uint4> &oplist) const;
   virtual int4 applyOp(PcodeOp *op,Funcdata &data);
 };
+class RuleVarArgsConv : public Rule {
+  Varnode *findReg(Architecture *glb, PcodeOp *op, uintb &offoff);
+public:
+  RuleVarArgsConv(const string &g) : Rule(g, 0, "varargsconv") {} ///< Constructor
+  virtual Rule *clone(const ActionGroupList &grouplist) const {
+    if (!grouplist.contains(getGroup())) return (Rule *)0;
+    return new RuleVarArgsConv(getGroup());
+  }
+  virtual void getOpList(vector<uint4> &oplist) const;
+  virtual int4 applyOp(PcodeOp *op,Funcdata &data);
+};
 // class RuleShadowVar : public Rule {
 // public:
 //   RuleShadowVar(const string &g) : Rule(g, 0, "shadowvar") {}	///< Constructor

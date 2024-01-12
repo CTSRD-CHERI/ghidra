@@ -3984,6 +3984,120 @@ int4 RuleLoadVarnode::applyOp(PcodeOp *op,Funcdata &data)
   return 1;
 }
 
+void RuleVarArgsConv::getOpList(vector<uint4> &oplist) const
+
+{
+  oplist.push_back(CPUI_STORE);
+}
+
+Varnode *RuleVarArgsConv::findReg(Architecture *glb, PcodeOp *op, uintb &offoff) {
+  uintb bounds;
+  bool hasBounds = false;
+  uintb inst_loc = op->getSeqNum().getAddr().getOffset();
+  Varnode *src = op->getIn(1);
+  PcodeOp *exclude = NULL;
+  offoff = 0;
+  if (src->getDef()->getSeqNum().getAddr().getOffset() == inst_loc) {
+  if (src->getDef()->code() != CPUI_COPY) {
+    offoff = src->getDef()->getIn(1)->getOffset();
+  }
+  src = src->getDef()->getIn(0);
+  Varnode *parent;
+  while (src->getDef() != NULL
+        && src->getDef()->getIn(0) != NULL) {
+    parent = src->getDef()->getIn(0);
+    if (src->getSpace() == parent->getSpace() &&
+        src->getOffset() == parent->getOffset()) {
+    exclude = src->getDef();
+    src = parent;
+    }
+    else { break; }
+  }
+  }
+  list<PcodeOp *>::const_iterator iter;
+  stack<PcodeOp *> worklist;
+  unordered_set<PcodeOp *> seen;
+  for(iter=src->beginDescend();iter!=src->endDescend();++iter) {
+  if (*iter != exclude) worklist.push(*iter);
+  else worklist = stack<PcodeOp *>();
+  }
+  PcodeOp *curr;
+  int i = 0;
+  Varnode *found = NULL;
+  while (!worklist.empty()) {
+  i++;
+  curr = worklist.top();
+  worklist.pop();
+  if (curr->code() == CPUI_CALLOTHER) {
+    uintb cmd = curr->getIn(0)->getOffset();
+    // 0x99 for clear perms
+    // 0x9a for set bounds
+    if (cmd == 0x99) {
+    found = curr->getOut();
+    break;
+    }
+    else if (cmd == 0x9a) {
+    Varnode *bounds_var = curr->getIn(2);
+    AddrSpace *bounds_space = bounds_var->getSpace();
+    bounds = bounds_var->getOffset();
+    if (bounds_space == bounds_space->getManager()->getUniqueSpace()) {
+        // Gotta do constant prop ourselves
+        bounds = bounds_var->getDef()->getIn(0)->getOffset();
+    }
+    hasBounds = true;
+    }
+  }
+  if (curr->getOut() != NULL) {
+    Varnode *vn = curr->getOut();
+    for(iter=vn->beginDescend();iter!=vn->endDescend();++iter) {
+    if (seen.find(*iter) != seen.end()) continue;
+    seen.insert(*iter);
+    worklist.push(*iter);
+    }
+  }
+  }
+  if (hasBounds && offoff >= bounds) return NULL;
+  return found;
+}
+
+int4 RuleVarArgsConv::applyOp(PcodeOp *op,Funcdata &data)
+
+{
+  int4 size;
+  AddrSpace *baseoff = NULL;
+  uintb offoff;
+  Architecture *glb = data.getArch();
+  Varnode *tmp = findReg(glb, op, offoff);
+  if (tmp) {
+  AddrSpace *cand = glb->getNextSpaceInOrder(NULL);
+  while (cand != (AddrSpace *)-1) {
+    try {
+    const VarnodeData &point(cand->getSpacebase(0));
+    if (point.space == tmp->getSpace()
+          && point.offset == tmp->getOffset()) {
+      baseoff = cand;
+      break;
+    }
+    }
+    catch (...) {}
+    cand = glb->getNextSpaceInOrder(cand);
+  }
+  }
+  if (baseoff == (AddrSpace *)0 || baseoff == baseoff->getManager()->getStackSpace()) {
+  return 0;
+  }
+
+  size = op->getIn(2)->getSize();
+  offoff = AddrSpace::addressToByte(offoff,baseoff->getWordSize());
+  Address addr(baseoff,offoff);
+  data.newVarnodeOut(size, addr,op);
+  op->getOut()->setStackStore();  // Mark as originally coming from CPUI_STORE
+  data.opRemoveInput(op,1);
+  data.opRemoveInput(op,0);
+  data.opSetOpcode(op, CPUI_COPY );
+  return 1;
+}
+
 /// \class RuleStoreVarnode
 /// \brief Convert STORE operations using a constant offset to COPY
 ///
@@ -3996,103 +4110,14 @@ void RuleStoreVarnode::getOpList(vector<uint4> &oplist) const
   oplist.push_back(CPUI_STORE);
 }
 
-static Varnode *trythis(Architecture *glb, PcodeOp *op, uintb &offoff) {
-  uintb bounds;
-  bool hasBounds = false;
-  uintb inst_loc = op->getSeqNum().getAddr().getOffset();
-  Varnode *src = op->getIn(1);
-  PcodeOp *exclude = NULL;
-  offoff = 0;
-  if (src->getDef()->getSeqNum().getAddr().getOffset() == inst_loc) {
-    if (src->getDef()->code() != CPUI_COPY) {
-      offoff = src->getDef()->getIn(1)->getOffset();
-    }
-    src = src->getDef()->getIn(0);
-    Varnode *parent;
-    while (src->getDef() != NULL
-          && src->getDef()->getIn(0) != NULL) {
-      parent = src->getDef()->getIn(0);
-      if (src->getSpace() == parent->getSpace() &&
-          src->getOffset() == parent->getOffset()) {
-        exclude = src->getDef();
-        src = parent;
-      }
-      else { break; }
-    }
-  }
-  list<PcodeOp *>::const_iterator iter;
-  stack<PcodeOp *> worklist;
-  unordered_set<PcodeOp *> seen;
-  for(iter=src->beginDescend();iter!=src->endDescend();++iter) {
-    if (*iter != exclude) worklist.push(*iter);
-    else worklist = stack<PcodeOp *>();
-  }
-  PcodeOp *curr;
-  int i = 0;
-  Varnode *found = NULL;
-  while (!worklist.empty()) {
-    i++;
-    curr = worklist.top();
-    worklist.pop();
-    if (curr->code() == CPUI_CALLOTHER) {
-      uintb cmd = curr->getIn(0)->getOffset();
-      // 0x99 for clear perms
-      // 0x9a for set bounds
-      if (cmd == 0x99) {
-        found = curr->getOut();
-        break;
-      }
-      else if (cmd == 0x9a) {
-        Varnode *bounds_var = curr->getIn(2);
-        AddrSpace *bounds_space = bounds_var->getSpace();
-        bounds = bounds_var->getOffset();
-        if (bounds_space == bounds_space->getManager()->getUniqueSpace()) {
-          // Gotta do constant prop ourselves
-          bounds = bounds_var->getDef()->getIn(0)->getOffset();
-        }
-        hasBounds = true;
-      }
-    }
-    if (curr->getOut() != NULL) {
-      Varnode *vn = curr->getOut();
-      for(iter=vn->beginDescend();iter!=vn->endDescend();++iter) {
-        if (seen.find(*iter) != seen.end()) continue;
-        seen.insert(*iter);
-        worklist.push(*iter);
-      }
-    }
-  }
-  if (hasBounds && offoff >= bounds) return NULL;
-  return found;
-}
-
 int4 RuleStoreVarnode::applyOp(PcodeOp *op,Funcdata &data)
 
 {
   int4 size;
-  AddrSpace *baseoff = NULL;
+  AddrSpace *baseoff;
   uintb offoff;
 
-  Architecture *glb = data.getArch();
-  Varnode *tmp = trythis(glb, op, offoff);
-  if (tmp) {
-    AddrSpace *cand = glb->getNextSpaceInOrder(NULL);
-    while (cand != (AddrSpace *)-1) {
-      try {
-        const VarnodeData &point(cand->getSpacebase(0));
-        if (point.space == tmp->getSpace()
-              && point.offset == tmp->getOffset()) {
-          baseoff = cand;
-          break;
-        }
-      }
-      catch (...) {}
-      cand = glb->getNextSpaceInOrder(cand);
-    }
-  }
-  if (baseoff == (AddrSpace *)0) {
-    baseoff = RuleLoadVarnode::checkSpacebase(data.getArch(),op,offoff);
-  }
+  baseoff = RuleLoadVarnode::checkSpacebase(data.getArch(),op,offoff);
   if (baseoff == (AddrSpace *)0) return 0;
 
   size = op->getIn(2)->getSize();
