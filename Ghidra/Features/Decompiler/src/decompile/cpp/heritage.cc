@@ -1413,7 +1413,7 @@ void Heritage::guardCalls(uint4 fl,const Address &addr,int4 size,vector<Varnode 
     if (spc->getType() == IPTR_SPACEBASE) {
 	if (fc->getSpacebaseOffset() != FuncCallSpecs::offset_unknown)
 	  off = spc->wrapOffset(off - fc->getSpacebaseOffset());
-	else
+	else if (spc->getManager()->getStackSpace() == spc)
 	  tryregister = false; // Do not attempt to register this stack loc as a trial
     }
     Address transAddr(spc,off);	// Address relative to callee's stack

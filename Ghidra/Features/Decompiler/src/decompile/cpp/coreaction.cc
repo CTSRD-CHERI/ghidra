@@ -5516,7 +5516,11 @@ void ActionDatabase::universalAction(Architecture *conf)
 	actprop->addRule( new RuleDoubleLoad("doubleload") );
 	actprop->addRule( new RuleDoubleStore("doubleprecis") );
 	actprop->addRule( new RuleDoubleIn("doubleprecis") );
-	for(iter=conf->extra_pool_rules.begin();iter!=conf->extra_pool_rules.end();++iter)
+	
+  actprop->addRule( new RuleLoadVarnode("stackvars") );
+  actprop->addRule( new RuleStoreVarnode("stackvars") );
+  
+  for(iter=conf->extra_pool_rules.begin();iter!=conf->extra_pool_rules.end();++iter)
 	  actprop->addRule( *iter ); // Add CPU specific rules
 	conf->extra_pool_rules.clear(); // Rules are now absorbed into universal
       }
@@ -5537,8 +5541,8 @@ void ActionDatabase::universalAction(Architecture *conf)
 	actprop2->addRule( new RuleStructOffset0("typerecovery") );
 	actprop2->addRule( new RulePtrArith("typerecovery") );
 	//	actprop2->addRule( new RuleIndirectConcat("analysis") );
-	actprop2->addRule( new RuleLoadVarnode("stackvars") );
-	actprop2->addRule( new RuleStoreVarnode("stackvars") );
+	// actprop2->addRule( new RuleLoadVarnode("stackvars") );
+	// actprop2->addRule( new RuleStoreVarnode("stackvars") );
       }
       actmainloop->addAction( actprop2 );
       actmainloop->addAction( new ActionDeterminedBranch("unreachable") );

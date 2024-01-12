@@ -31,6 +31,7 @@
   
   <stackpointer register="sp" space="ram"/> <!-- Only use the address value part of a capability 
     in analyses involving stack pointer -->
+  <spacebase name="varargs" register="c9" space="ram"/>
   <funcptr align="4"/>     <!-- Function pointers are word aligned and leastsig bit may encode otherstuff -->
   
   <prefersplit style="inhalf">
@@ -97,6 +98,7 @@
         <pentry minsize="1" maxsize="16" extension="zero">
           <register name="c0"/>
         </pentry>
+        <!-- HACKISH
         <pentry minsize="1" maxsize="16" extension="zero">
           <register name="c1"/>
         </pentry>
@@ -117,15 +119,13 @@
         </pentry>
         <pentry minsize="1" maxsize="16" extension="zero">
           <register name="c7"/>
-        </pentry>
-        <!-- TODO: discard the stack and use only c9 -->
+        </pentry> 
+        -->
+        <!-- discard the stack and use only c9 -->
         <!-- c9: Parameter register for variadic calls -->
-        <pentry minsize="1" maxsize="16" extension="zero">
-          <register name="c9" />
+        <pentry minsize="1" maxsize="500" align="16">
+          <addr offset="0" space="varargs"/>
         </pentry>
-        <!-- <pentry minsize="1" maxsize="500" align="4">
-          <addr offset="0" space="stack"/>
-        </pentry> -->
       </input>
       <output>
         <pentry minsize="1" maxsize="8" metatype="float">
@@ -167,7 +167,8 @@
         <!-- c8: indirect result location register, which is not
          reflected in the pentry list -->
         <register name="c8"/>
-        <register name="c9"/>
+        <!-- 
+        <register name="c9"/> -->
         <register name="c10"/>
         <register name="c11"/>
         <register name="c12"/>

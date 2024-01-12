@@ -68,6 +68,7 @@ public class BasicCompilerSpec implements CompilerSpec {
 	private boolean stackGrowsNegative = true;
 	private boolean reverseJustifyStack = false;
 	private Map<String, Pair<AddressSpace, String>> spaceBases;
+	private Map<String, AddressSpace> spaceBaseAddrs; // The actual spacebase AddressSpace
 	private List<Pair<String, Pair<Long, Long>>> extraRanges;
 	protected PcodeInjectLibrary pcodeInject;
 	private AddressSet globalSet;		// Set of addresses the decompiler considers "global" in scope
@@ -184,6 +185,7 @@ public class BasicCompilerSpec implements CompilerSpec {
 		reverseJustifyStack = op2.reverseJustifyStack;
 		sourceName = op2.sourceName;
 		spaceBases = op2.spaceBases;	// Currently an immutable map
+		spaceBaseAddrs = op2.spaceBaseAddrs;
 		extraRanges = op2.extraRanges;	// Currently an immutable map
 		stackBaseSpace = op2.stackBaseSpace;
 		stackGrowsNegative = op2.stackGrowsNegative;
@@ -416,6 +418,10 @@ public class BasicCompilerSpec implements CompilerSpec {
 		}
 		if (spaceName.equals(SpaceNames.OTHER_SPACE_NAME)) {
 			space = AddressSpace.OTHER_SPACE;
+		}
+		// Try spaceBases
+		if (space == null) {
+			space = spaceBaseAddrs.get(spaceName);
 		}
 		if (space == null) {
 			throw new SleighException("Unknown address space: " + spaceName);
@@ -773,6 +779,9 @@ public class BasicCompilerSpec implements CompilerSpec {
 		if (spaceBases == null) {
 			spaceBases = new TreeMap<>();
 		}
+		if (spaceBaseAddrs == null) {
+			spaceBaseAddrs = new TreeMap<>();
+		}
 		XmlElement el = parser.start();
 		String name = el.getAttribute("name");
 		Register reg = language.getRegister(el.getAttribute("register"));
@@ -785,6 +794,12 @@ public class BasicCompilerSpec implements CompilerSpec {
 			throw new SleighException("Duplicate space name: " + name);
 		}
 		AddressSpace space = getAddressSpace(spaceName);
+
+		int spaceBaseSize = Math.min(reg.getBitLength(), space.getSize());
+		GenericAddressSpace newAddrSpace = new GenericAddressSpace(name, spaceBaseSize,
+				space.getAddressableUnitSize(), AddressSpace.TYPE_IPTR_INTERNAL, 0);
+
+		spaceBaseAddrs.put(name, newAddrSpace);
 		spaceBases.put(name, new Pair<>(space, reg.getName()));
 		parser.end(el);
 	}

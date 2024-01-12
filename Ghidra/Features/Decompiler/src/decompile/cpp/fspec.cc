@@ -5359,10 +5359,8 @@ void FuncCallSpecs::checkInputTrialUse(Funcdata &data,AliasChecker &aliascheck)
     int4 slot = trial.getSlot();
     Varnode *vn = op->getIn(slot);
     if (vn->getSpace()->getType() == IPTR_SPACEBASE) {
-      if (aliascheck.hasLocalAlias(vn))
-	trial.markNoUse();
-      else if (!data.getFuncProto().getLocalRange().inRange(vn->getAddr(),1))
-	trial.markNoUse();
+      if (aliascheck.hasLocalAlias(vn)) trial.markNoUse();
+      // else if (!data.getFuncProto().getLocalRange().inRange(vn->getAddr(),1)) trial.markNoUse();
       else if (callee_pop) {
 	if ((int4)(trial.getAddress().getOffset() + (trial.getSize()-1)) < expop)
 	  trial.markActive();
