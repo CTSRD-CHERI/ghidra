@@ -591,6 +591,7 @@ protected:
   static void markGroupNoUse(ParamActive *active,int4 activeTrial,int4 trialStart);
   static void markBestInactive(ParamActive *active,int4 group,int4 groupStart,type_class prefType);
   static void forceExclusionGroup(ParamActive *active);
+  static bool shouldMarkInactive(ParamTrial &trial);
   static void forceNoUse(ParamActive *active,int4 start,int4 stop);
   static void forceInactiveChain(ParamActive *active,int4 maxchain,int4 start,int4 stop,int4 groupstart);
   void calcDelay(void);		///< Calculate the maximum heritage delay for any potential parameter in this list

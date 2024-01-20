@@ -983,6 +983,12 @@ void ParamListStandard::forceExclusionGroup(ParamActive *active)
     markBestInactive(active, curGroup, groupStart, TYPECLASS_GENERAL);
 }
 
+// For the special case
+bool ParamListStandard::shouldMarkInactive(ParamTrial &trial) {
+    AddrSpace *addr = trial.getAddress().getSpace();
+    return (addr->getName() == "register" || addr->getName() == "stack");
+}
+
 /// \brief Mark every trial above the first "definitely not used" as \e inactive.
 ///
 /// Inspection and marking only occurs within an indicated range of trials,
@@ -1013,8 +1019,8 @@ void ParamListStandard::forceNoUse(ParamActive *active, int4 start, int4 stop)
       alldefnouse = curtrial.isDefinitelyNotUsed();
       curgroup = grp;
     }
-    if (seendefnouse)
-      curtrial.markInactive();
+    if (seendefnouse && shouldMarkInactive(curtrial))
+        curtrial.markInactive();
   }
 }
 
@@ -1063,7 +1069,7 @@ void ParamListStandard::forceInactiveChain(ParamActive *active,int4 maxchain,int
       if (!seenchain)
 	max = i;
     }
-    if (seenchain)
+    if (seenchain && shouldMarkInactive(trial))
       trial.markInactive();
   }
   for(int4 i=start;i<=max;++i) { // Across the range of active trials, fill in "holes" of inactive trials
