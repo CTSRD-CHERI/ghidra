@@ -2133,7 +2133,25 @@ is b_2428=0b10 & b_2931=0b100 & b_23=0 & b_1011=0 & Rn_GPR129csp & imm9 & Rn_GPR
 	export addr;
 }
 CAddrUIMM: "["^Rn_GPR129csp^"]"
-is b_2428=0b10 & b_2931=0b100 & b_23=0 & Rn_GPR129csp & imm9=0 & Rn_GPR64xsp
+is b_2428=0b10 & b_2931=0b100 & b_23=0 & b_1011=1 & Rn_GPR129csp & imm9=0 & Rn_GPR64xsp
+{
+	addr:8 = Rn_GPR64xsp;
+	export addr;
+}
+CAddrUIMM: "["^Rn_GPR129csp^"]"
+is b_2428=0b10 & b_2931=0b100 & b_23=0 & b_1011=2 & Rn_GPR129csp & imm9=0 & Rn_GPR64xsp
+{
+	addr:8 = Rn_GPR64xsp;
+	export addr;
+}
+CAddrUIMM: "["^Rn_GPR129csp^"]"
+is b_2428=0b10 & b_2931=0b100 & b_23=0 & b_1011=3 & Rn_GPR129csp & imm9=0 & Rn_GPR64xsp
+{
+	addr:8 = Rn_GPR64xsp;
+	export addr;
+}
+CAddrUIMM: "["^Rn_GPR129csp^"]"
+is b_2428=0b10 & b_2931=0b100 & b_23=0 & b_1011=0 & Rn_GPR129csp & imm9=0 & Rn_GPR64xsp
 {
 	addr:8 = Rn_GPR64xsp;
 	export addr;
@@ -2172,10 +2190,9 @@ addrExtendRegShift64: ExtendReg64^addrRegShift64 is aa_extreg_option=7 & aa_extr
 addrExtendRegShift64: Rm_GPR64 is Rm_GPR64 & aa_extreg_option=3 & aa_extreg_imm3=0 & ExtendReg64 { export Rm_GPR64; }
 addrExtendRegShift64: Rm_GPR64 is Rm_GPR64 & aa_extreg_option=7 & aa_extreg_imm3=0 & ExtendReg64 { export Rm_GPR64; }
 
-addrRegShift129: "" is b_12=0 { export 0:8; }
-
 # byte variant
 addrRegShift129: "#"^val is b_12 & b_21=0 & b_1011=0 [ val = b_12 * 0; ] { export *[const]:8 val; }
+addrRegShift129: "" is b_12=0 & b_21=0 & b_1011=0 { export 0:8; }
 addrRegShift129: "#"^val is b_12 & b_21=0 & b_1011=1 [ val = b_12 * 0; ] { export *[const]:8 val; }
 
 # halfword variant
@@ -2183,16 +2200,18 @@ addrRegShift129: "#"^val is b_12 & b_21=0 & b_1011=0b11 [ val = b_12 * 1; ] { ex
 addrRegShift129: "#"^val is b_12 & b_21=0 & b_1011=0b10 [ val = b_12 * 1; ] { export *[const]:8 val; }
 
 # word variant (32-bit)
-addrRegShift129: "#"^val is b_12 & b_21=1 & b_1011=0 [ val = b_12 * 2; ] { export *[const]:8 val; }
-addrRegShift129: "#"^val is b_12 & b_21=1 & b_1011=0b11 [ val = b_12 * 2; ] { export *[const]:8 val; }
+addrRegShift129: "#"^val is b_12 & b_2930=0 & b_21=1 & b_1011=0 [ val = b_12 * 2; ] { export *[const]:8 val; }
+addrRegShift129: "#"^val is b_12 & b_2930=0 & b_21=1 & b_1011=0b11 [ val = b_12 * 2; ] { export *[const]:8 val; }
 
 # doubleword variant (64-bit)
-addrRegShift129: "#"^val is b_12 & b_21=1 & b_1011=1 [ val = b_12 * 3; ] { export *[const]:8 val; }
-addrRegShift129: "#"^val is b_12 & b_21=1 & b_1011=2 [ val = b_12 * 3; ] { export *[const]:8 val; }
+addrRegShift129: "#"^val is b_12 & b_2930=0 & b_21=1 & b_1011=1 [ val = b_12 * 3; ] { export *[const]:8 val; }
+addrRegShift129: "#"^val is b_12 & b_2930=0 & b_21=1 & b_1011=2 [ val = b_12 * 3; ] { export *[const]:8 val; }
 
 # capability variant
-addrRegShift129: "#"^val is b_12 & b_2223=0b11 & b_10=1 & b_21=1 & b_14=1 [ val = b_12 * 4; ] { export *[const]:8 val; }
-addrRegShift129: "#"^val is b_12 & b_21=1 & b_14=1 & b_1011=2 [ val = b_12 * 4; ] { export *[const]:8 val; }
+addrRegShift129: "#"^val is b_12 & b_2930=1 & toplevel=2 & b_2223=0b11 & b_10=1 & b_21=1 & b_14=1 [ val = b_12 * 4; ] { export *[const]:8 val; }
+addrRegShift129: "#"^val is b_12 & b_2930=2 & toplevel=2 & b_2223=0b11 & b_10=1 & b_21=1 & b_14=1 [ val = b_12 * 4; ] { export *[const]:8 val; }
+addrRegShift129: "#"^val is b_12 & b_2930=1 & toplevel=2 & b_21=1 & b_14=1 & b_1011=2 [ val = b_12 * 4; ] { export *[const]:8 val; }
+addrRegShift129: "#"^val is b_12 & b_2930=2 & toplevel=2 & b_21=1 & b_14=1 & b_1011=2 [ val = b_12 * 4; ] { export *[const]:8 val; }
 
 addrExtendRegShift129: ExtendReg129^addrRegShift129 is addrRegShift129 & ExtendReg129 { tmp:8 = ExtendReg129; tmp = tmp << addrRegShift129; export tmp; }
 
@@ -2272,7 +2291,14 @@ is b_2428=0b10 & b_2931=0b100 & b_23=1 & Rn_GPR129csp & addrExtendRegShift129 & 
 
 # post indexed wback
 CAddrIndexed: "["^Rn_GPR129csp^"]", "#"^CAddrScale
-is b_2428=0b10 & b_21=0 & b_1011=0b01 & Rn_GPR129csp & CAddrScale & Rn_GPR64xsp
+is b_2428=0b10 & b_2931=0b1 & b_21=0 & b_1011=0b01 & Rn_GPR129csp & CAddrScale & Rn_GPR64xsp
+{
+	tmp:8 = Rn_GPR64xsp;
+	Rn_GPR64xsp = Rn_GPR64xsp + CAddrScale;
+	export tmp;
+}
+CAddrIndexed: "["^Rn_GPR129csp^"]", "#"^CAddrScale
+is b_2428=0b10 & b_2931=0b101 & b_21=0 & b_1011=0b01 & Rn_GPR129csp & CAddrScale & Rn_GPR64xsp
 {
 	tmp:8 = Rn_GPR64xsp;
 	Rn_GPR64xsp = Rn_GPR64xsp + CAddrScale;
@@ -2281,7 +2307,14 @@ is b_2428=0b10 & b_21=0 & b_1011=0b01 & Rn_GPR129csp & CAddrScale & Rn_GPR64xsp
 
 # pre indexed wback
 CAddrIndexed: "["^Rn_GPR129csp, "#"^CAddrScale^"]!"
-is b_2428=0b10 & b_21=0 & b_1011=0b11 & Rn_GPR129csp & CAddrScale & Rn_GPR64xsp
+is b_2428=0b10 & b_2931=0b011 & b_21=0 & b_1011=0b11 & Rn_GPR129csp & CAddrScale & Rn_GPR64xsp
+{
+	Rn_GPR64xsp = Rn_GPR64xsp + CAddrScale;
+	tmp:8 = Rn_GPR64xsp;
+	export tmp;
+}
+CAddrIndexed: "["^Rn_GPR129csp, "#"^CAddrScale^"]!"
+is b_2428=0b10 & b_2931=0b101 & b_21=0 & b_1011=0b11 & Rn_GPR129csp & CAddrScale & Rn_GPR64xsp
 {
 	Rn_GPR64xsp = Rn_GPR64xsp + CAddrScale;
 	tmp:8 = Rn_GPR64xsp;
