@@ -56,6 +56,11 @@ model {
 			gcc(Gcc) {
 				target("freebsd_x86_64")
 			}
+			clang(Clang) {
+				if (isCurrentArm_64()) {
+					target("freebsd_arm_64")
+				}
+			}
 		}
 		if (isCurrentWindows() && VISUAL_STUDIO_INSTALL_DIR) {
 			// specify installDir because Gradle doesn't find VS Build Tools.
