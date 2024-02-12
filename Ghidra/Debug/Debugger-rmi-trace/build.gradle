@@ -44,11 +44,19 @@ task generateProtoPy {
 	ext.outdir = file("build/generated/source/proto/main/py")
 	outputs.dir(outdir)
 	inputs.files(src)
-	dependsOn(configurations.protocArtifact)
+	if (!isCurrentFreeBSD()) {
+		dependsOn(configurations.protocArtifact)
+	}
 	doLast {
-		def exe = configurations.protocArtifact.first()
-		if (!isCurrentWindows()) {
-			exe.setExecutable(true)
+		def exe = ''
+		if (isCurrentFreeBSD()) {
+			// XXXR3: CheriBSD default protoc path. A bit hackish.
+			exe = '/usr/local64/bin/protoc'
+		} else {
+			exe = configurations.protocArtifact.first()
+			if (!isCurrentWindows()) {
+				exe.setExecutable(true)
+			}
 		}
 		exec {
 			commandLine exe, "--python_out=$outdir", "-I$srcdir"
