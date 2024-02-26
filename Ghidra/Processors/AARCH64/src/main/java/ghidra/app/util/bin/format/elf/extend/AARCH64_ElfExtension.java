@@ -44,6 +44,9 @@ public class AARCH64_ElfExtension extends ElfExtension {
 	public static final ElfSectionHeaderType SHT_AARCH64_ATTRIBUTES =
 		new ElfSectionHeaderType(0x70000003, "SHT_AARCH64_ATTRIBUTES", "Attribute section");
 
+	// Processor-specific flags for the ELF header e_flags field
+    public static final int EF_AARCH64_CHERI_PURECAP = 0x00010000;
+
 	// Section header flags
 	private static final int SHF_ENTRYSECT = 0x10000000; // section contains entry point
 	private static final int SHF_COMDEF = 0x80000000; // section may be multiply defined
