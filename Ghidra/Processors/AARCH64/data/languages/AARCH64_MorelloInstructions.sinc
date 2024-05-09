@@ -1950,9 +1950,10 @@ Addr19: AddrLoc19 is AddrLoc19 { export *:8 AddrLoc19; }
 
 Addr26: AddrLoc26 is AddrLoc26 { export *:8 AddrLoc26; }
 
+# This differs to standard AARCH64 (when PSTATE.C64 != 1)
 AdrReloff: reloff is b_31=1 & b_23=0 & immlo & morello.immhi [ reloff = ((inst_start) & ~0xfff) + (( ((morello.immhi << 2) | immlo) << 12 ) & 0xffffffffffffffff); ] { export *[const]:8 reloff; }
 AdrReloff: reloff is b_31=1 & b_23=1 & immlo & morello.immhi [ reloff = ((inst_start) & ~0xfff) + (( ((morello.immhi << 2) | immlo) << 12 )); ] { export *[const]:8 reloff; }
-AdrReloff: reloff is b_31=0 & b_23=1 & immlo & morello.immhi [ reloff = (inst_start) + ( ((morello.immhi << 2) | immlo) ); ] { export *[const]:8 reloff; }
+AdrReloff: reloff is b_31=0 & immlo & immhi [ reloff = (inst_start) + ( ((immhi << 2) | immlo) ); ] { export *[const]:8 reloff; }
 
 ImmShift32: "#"^imm12 is aa_extreg_shift=0 & imm12 { export *[const]:4 imm12; }
 ImmShift32: "#"^imm12, "LSL #12" is aa_extreg_shift=1 & imm12 { tmp:4 = imm12 << 12; export tmp; }
