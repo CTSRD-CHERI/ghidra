@@ -110,6 +110,10 @@ apply from: 'gradle/root/usage.gradle'        // adds task documentation
 apply from: "gradle/root/svg.gradle"          // adds task to process svg files
 apply from: "gradle/root/jacoco.gradle"       // adds tasks for java code coverage
 
+// LoongArch has comments with characters not in US-ASCII
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
 
 apply plugin: 'base'
 clean {
