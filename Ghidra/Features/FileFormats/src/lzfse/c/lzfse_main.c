@@ -24,9 +24,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 
 // LZFSE command line tool
 
+#if 0
 #if !defined(_POSIX_C_SOURCE) || (_POSIX_C_SOURCE < 200112L)
 #  undef _POSIX_C_SOURCE
 #  define _POSIX_C_SOURCE 200112L
+#endif
 #endif
 
 #if defined(_MSC_VER)
